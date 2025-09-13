@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 
 const app = new Hono<{
   Variables: {

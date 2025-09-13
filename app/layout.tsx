@@ -38,7 +38,7 @@ export default async function RootLayout({
         <Navigation session={session} />
         {children}
       </body>
-      <Toaster />
+      <Toaster richColors />
     </html>
   );
 }
