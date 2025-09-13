@@ -1,11 +1,16 @@
-"use client";
+
 
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import Link from "next/link";
 
-type Session = typeof auth.$Infer.Session;
 
-export default function Navigation({ session }: { session: Session | null }) {
+export default async function Navigation() {
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   return (
     <header className="bg-white backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,7 +27,7 @@ export default function Navigation({ session }: { session: Session | null }) {
 
             {!session && (
               <Link
-                href="/auth"
+                href="/sign-in"
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Sign In

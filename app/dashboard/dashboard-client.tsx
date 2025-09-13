@@ -11,7 +11,7 @@ export default function DashboardClientPage({ session }: { session: Session }) {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/auth");
+    router.push("/sign-in");
   };
 
   return (
