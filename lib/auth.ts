@@ -11,11 +11,14 @@ import {
 import { nextCookies } from "better-auth/next-js";
 import { betterAuth } from "better-auth";
 import { prisma } from "./prisma";
+import EmailVerification from "@/components/email/email-verification";
+import { resend } from "./resend";
+import VerifyOTP from "@/components/email/verify-otp";
 
-const githubClientId = process.env.GOOGLE_CLIENT_ID!;
-const githubClientSecret = process.env.GOOGLE_CLIENT_SECRET!;
-const googleClientId = process.env.GITHUB_CLIENT_ID!;
-const googleClientSecret = process.env.GITHUB_CLIENT_SECRET!;
+const githubClientId = process.env.GITHUB_CLIENT_ID!;
+const githubClientSecret = process.env.GITHUB_CLIENT_SECRET!;
+const googleClientId = process.env.GOOGLE_CLIENT_ID!;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET!;
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -23,6 +26,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
   },
   socialProviders: {
     github: {
@@ -34,6 +38,23 @@ export const auth = betterAuth({
       clientSecret: googleClientSecret,
     },
   },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await resend.emails.send({
+        from: "Acme <onboarding@resend.dev>",
+        to: user.email,
+        subject: "Verify your email",
+        react: EmailVerification({
+          userName: user.name ?? "User",
+          verificationUrl: url,
+        }),
+      });
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 300,
+  },
+
   appName: "restaurant_saas_nextjs",
   plugins: [
     openAPI(),
@@ -41,8 +62,16 @@ export const auth = betterAuth({
     organization(),
     admin(),
     emailOTP({
-      async sendVerificationOTP({ email, otp, type }, request) {
-        // Send email with OTP
+      async sendVerificationOTP({ email, otp }) {
+        await resend.emails.send({
+          from: "Acme <onboarding@resend.dev>",
+          to: email,
+          subject: "OTP verify",
+          react: VerifyOTP({
+            otp: otp,
+            type: "forgot-password",
+          }),
+        });
       },
     }),
     phoneNumber(),

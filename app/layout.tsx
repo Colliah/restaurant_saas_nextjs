@@ -31,7 +31,6 @@ export default function RootLayout({
       <body
         className={`${nunitoSans.variable} ${nunito.variable} antialiased`}
       >
-        <Navigation />  
         {children}
         <Toaster richColors />
       </body>

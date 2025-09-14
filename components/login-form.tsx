@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,17 +9,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
-import { signIn, signInSocial, signUp } from "@/lib/actions/auth-actions";
+import {
+  handleEmailOTP,
+  signIn,
+  signInSocial,
+  signUp,
+} from "@/lib/actions/auth-actions";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
   const [isSignIn, setIsSignIn] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,12 +37,11 @@ export function LoginForm({
 
   const handleSocialAuth = async (provider: "google" | "github") => {
     setIsLoading(true);
-    setError("");
 
     try {
       await signInSocial(provider);
     } catch (err) {
-      setError(
+      toast.error(
         `Error authenticating with ${provider}: ${
           err instanceof Error ? err.message : "Unknown error"
         }`
@@ -47,26 +54,27 @@ export function LoginForm({
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       if (isSignIn) {
         const result = await signIn(email, password);
-        if (!result.user) {
-          toast.error("Invalid email or password");
+        if (result.success && result.user) {
+          toast.success("Login successful!");
+          router.push("/dashboard");
+        } else {
+          toast.error(result.error || "Invalid email or password");
         }
       } else {
         const result = await signUp(email, password, name);
-        if (!result.user) {
-          toast.error("Failed to create account");
+        if (result.success && result.user) {
+          toast.success("Account created! Please login.");
+          setIsSignIn(true);
+          setEmail("");
+          setPassword("");
+        } else {
+          toast.error(result.error || "Failed to create account");
         }
       }
-    } catch (err) {
-      const errorMessage = `Authentication error: ${
-        err instanceof Error ? err.message : "Unknown error"
-      }`;
-      toast.error(errorMessage);
-      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -108,12 +116,9 @@ export function LoginForm({
                   type="button"
                   onClick={() => handleSocialAuth("github")}
                   variant="outline"
-                  disabled={isLoading}
                   className="w-full flex items-center justify-center gap-2"
                 >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
+                  {
                     <svg
                       width="24"
                       height="24"
@@ -132,7 +137,7 @@ export function LoginForm({
                         C20.565 22.092 24 17.592 24 12.297 24 5.67 18.627.297 12 .297z"
                       />
                     </svg>
-                  )}
+                  }
                   Continue with GitHub
                 </Button>
 
@@ -140,36 +145,31 @@ export function LoginForm({
                   type="button"
                   onClick={() => handleSocialAuth("google")}
                   variant="outline"
-                  disabled={isLoading}
                   className="w-full flex items-center justify-center gap-2"
                 >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 48 48"
-                    >
-                      <path
-                        fill="#4285F4"
-                        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.63 2.43 30.24 0 24 0 14.62 0 6.4 5.38 2.56 13.22l7.98 6.19C12.43 13.54 17.74 9.5 24 9.5z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M46.98 24.55c0-1.64-.15-3.22-.42-4.75H24v9h12.94c-.56 2.88-2.24 5.34-4.77 6.98l7.69 5.97C44.47 37.06 46.98 31.3 46.98 24.55z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M10.54 28.41c-.48-1.41-.75-2.91-.75-4.41s.27-3 .75-4.41l-7.98-6.19C.92 16.54 0 20.17 0 24s.92 7.46 2.56 10.59l7.98-6.18z"
-                      />
-                      <path
-                        fill="#EA4335"
-                        d="M24 48c6.48 0 11.91-2.13 15.88-5.8l-7.69-5.97c-2.14 1.44-4.9 2.27-8.19 2.27-6.26 0-11.57-4.04-13.46-9.69l-7.98 6.18C6.4 42.62 14.62 48 24 48z"
-                      />
-                    </svg>
-                  )}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      fill="#4285F4"
+                      d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.63 2.43 30.24 0 24 0 14.62 0 6.4 5.38 2.56 13.22l7.98 6.19C12.43 13.54 17.74 9.5 24 9.5z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M46.98 24.55c0-1.64-.15-3.22-.42-4.75H24v9h12.94c-.56 2.88-2.24 5.34-4.77 6.98l7.69 5.97C44.47 37.06 46.98 31.3 46.98 24.55z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M10.54 28.41c-.48-1.41-.75-2.91-.75-4.41s.27-3 .75-4.41l-7.98-6.19C.92 16.54 0 20.17 0 24s.92 7.46 2.56 10.59l7.98-6.18z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M24 48c6.48 0 11.91-2.13 15.88-5.8l-7.69-5.97c-2.14 1.44-4.9 2.27-8.19 2.27-6.26 0-11.57-4.04-13.46-9.69l-7.98 6.18C6.4 42.62 14.62 48 24 48z"
+                    />
+                  </svg>
                   Continue with Google
                 </Button>
               </div>
@@ -191,7 +191,6 @@ export function LoginForm({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required={!isSignIn}
-                      disabled={isLoading}
                     />
                   </div>
                 )}
@@ -201,11 +200,10 @@ export function LoginForm({
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder="johndoe@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    disabled={isLoading}
                   />
                 </div>
 
@@ -213,12 +211,12 @@ export function LoginForm({
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                     {isSignIn && (
-                      <a
-                        href="#"
+                      <Link
+                        href="/forgot-password"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?
-                      </a>
+                      </Link>
                     )}
                   </div>
                   <Input
@@ -232,18 +230,35 @@ export function LoginForm({
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      {isSignIn ? "Signing in..." : "Creating account..."}
-                    </div>
-                  ) : isSignIn ? (
-                    "Sign In"
-                  ) : (
-                    "Create Account"
-                  )}
-                </Button>
+                <div className="space-y-2 w-full">
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {isSignIn ? "Signing in..." : "Creating account..."}
+                      </div>
+                    ) : isSignIn ? (
+                      "Sign In"
+                    ) : (
+                      "Create Account"
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    className={buttonVariants({
+                      variant: "secondary",
+                      className: "w-full",
+                    })}
+                    onClick={async () => {
+                      const data = await handleEmailOTP(email);
+                      if (data) {
+                        router.push(`/verify?email=${email}`);
+                      }
+                    }}
+                  >
+                    Sign in with Email OTP
+                  </Button>
+                </div>
               </div>
 
               <div className="text-center text-sm">
@@ -277,11 +292,11 @@ export function LoginForm({
       </Card>
 
       <div className="text-center text-xs text-balance text-muted-foreground">
-        By clicking continue, you agree to our{" "}
+        By clicking continue, you agree to our
         <a href="#" className="underline underline-offset-4 hover:text-primary">
           Terms of Service
-        </a>{" "}
-        and{" "}
+        </a>
+        and
         <a href="#" className="underline underline-offset-4 hover:text-primary">
           Privacy Policy
         </a>
