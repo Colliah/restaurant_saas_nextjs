@@ -22,6 +22,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getUserOrganization } from "@/lib/actions/organization-actions";
 
 export function LoginForm({
   className,
@@ -59,8 +60,15 @@ export function LoginForm({
       if (isSignIn) {
         const result = await signIn(email, password);
         if (result.success && result.user) {
-          toast.success("Login successful!");
-          router.push("/dashboard");
+          toast.success("Login successfully!");
+
+          const org = await getUserOrganization(result.user.id);
+
+          if (org) {
+            router.push("/organization");
+          } else {
+            router.push("/onboard");
+          }
         } else {
           toast.error(result.error || "Invalid email or password");
         }
@@ -71,6 +79,7 @@ export function LoginForm({
           setIsSignIn(true);
           setEmail("");
           setPassword("");
+          router.push("/onboard");
         } else {
           toast.error(result.error || "Failed to create account");
         }

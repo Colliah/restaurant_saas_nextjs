@@ -96,3 +96,10 @@ export const getUsers = async (organizationId: string) => {
     return [];
   }
 };
+
+export async function getUserOrganization(userId: string) {
+  return prisma.member.findFirst({
+    where: { userId },
+    include: { organization: true },
+  });
+}
