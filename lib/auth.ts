@@ -3,7 +3,6 @@ import {
   username,
   phoneNumber,
   emailOTP,
-  admin,
   organization,
   multiSession,
   openAPI,
@@ -14,6 +13,9 @@ import { prisma } from "./prisma";
 import EmailVerification from "@/components/email/email-verification";
 import { resend } from "./resend";
 import VerifyOTP from "@/components/email/verify-otp";
+import OrganizationInvitation from "@/components/email/organization-invite";
+import { getActiveOrganization } from "./actions/organization-actions";
+import { ac, owner, admin, member } from "./permission";
 
 const githubClientId = process.env.GITHUB_CLIENT_ID!;
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET!;
@@ -54,13 +56,49 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     expiresIn: 300,
   },
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          const organization = await getActiveOrganization(session.userId);
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: organization?.id,
+            },
+          };
+        },
+      },
+    },
+  },
 
   appName: "restaurant_saas_nextjs",
   plugins: [
     openAPI(),
     multiSession(),
-    organization(),
-    admin(),
+    organization({
+      ac,
+      roles: {
+        owner,
+        admin,
+        member,
+      },
+      async sendInvitationEmail(data) {
+        const inviteLink = `http://localhost:3000/api/accept-invitation/${data.id}`;
+        await resend.emails.send({
+          from: "Acme <onboarding@resend.dev>",
+          to: data.email,
+          subject: "You've been invited to join our organization",
+          react: OrganizationInvitation({
+            email: data.email,
+            invitedByUsername: data.inviter.user.name,
+            invitedByEmail: data.inviter.user.email,
+            teamName: data.organization.name,
+            inviteLink,
+          }),
+        });
+      },
+    }),
     emailOTP({
       async sendVerificationOTP({ email, otp }) {
         await resend.emails.send({

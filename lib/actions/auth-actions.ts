@@ -3,6 +3,32 @@
 import { redirect } from "next/navigation";
 import { auth } from "../auth";
 import { headers } from "next/headers";
+import { prisma } from "../prisma";
+
+export const getCurrentUser = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
+  const currentUser = await prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+  });
+
+  if (!currentUser) {
+    redirect("/sign-in");
+  }
+
+  return {
+    ...session,
+    currentUser,
+  };
+};
 
 export const signUp = async (email: string, password: string, name: string) => {
   try {
@@ -14,7 +40,12 @@ export const signUp = async (email: string, password: string, name: string) => {
       },
     });
 
-    return { success: true, user: result.user };
+    await prisma.user.update({
+      where: { id: result.user.id },
+      data: { role: "member" },
+    });
+
+    return { success: true, user: { ...result.user, role: "member" } };
   } catch (err) {
     return {
       success: false,
