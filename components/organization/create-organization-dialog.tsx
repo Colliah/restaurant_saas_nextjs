@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,6 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,15 +32,7 @@ import {
 } from "@/schema/organization";
 import { toast } from "sonner";
 
-interface CreateOrganizationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function CreateOrganizationDialog({
-  open,
-  onOpenChange,
-}: CreateOrganizationDialogProps) {
+export function CreateOrganizationDialog() {
   const form = useForm<organizationFormValue>({
     resolver: zodResolver(organizationSchema),
     defaultValues: {
@@ -53,43 +45,44 @@ export function CreateOrganizationDialog({
 
   const onSubmit = async (data: organizationFormValue) => {
     try {
-      await createOrganization(data.name, data.slug, data.logo);
+      await createOrganization(
+        data.name,
+        data.slug,
+        data.logo,
+        data.keepCurrentActiveOrganization
+      );
       toast.success("Created new organization successfully");
       form.reset();
-      onOpenChange(false);
     } catch (error) {
-      toast.error(`${error}`);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) {
-      form.reset();
-    }
-    onOpenChange(newOpen);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>+ New Organization</Button>
+      </DialogTrigger>
+
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            Create New Organization
-          </DialogTitle>
-          <DialogDescription className="sr-only"></DialogDescription>
+          <DialogTitle>Create New Organization</DialogTitle>
+          <DialogDescription>
+            Fill in the details to create a new organization.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardContent className="flex items-center gap-x-1 px-0">
-                  <Info className="h-5 w-5" />
-                  <CardTitle>Organization Information</CardTitle>
-                  <DialogDescription className="sr-only"></DialogDescription>
-                </CardContent>
+              <CardHeader className="flex flex-row items-center gap-x-2">
+                <Info className="h-5 w-5" />
+                <CardTitle>Organization Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Name */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -104,6 +97,7 @@ export function CreateOrganizationDialog({
                   )}
                 />
 
+                {/* Slug */}
                 <FormField
                   control={form.control}
                   name="slug"
@@ -118,6 +112,7 @@ export function CreateOrganizationDialog({
                   )}
                 />
 
+                {/* Logo */}
                 <FormField
                   control={form.control}
                   name="logo"
@@ -135,6 +130,7 @@ export function CreateOrganizationDialog({
                   )}
                 />
 
+                {/* Switch */}
                 <FormField
                   control={form.control}
                   name="keepCurrentActiveOrganization"
@@ -156,13 +152,11 @@ export function CreateOrganizationDialog({
             </Card>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
+              </DialogClose>
               <Button type="submit">Create Organization</Button>
             </DialogFooter>
           </form>

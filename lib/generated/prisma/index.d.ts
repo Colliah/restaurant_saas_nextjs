@@ -50,6 +50,24 @@ export type Member = $Result.DefaultSelection<Prisma.$MemberPayload>
 export type Invitation = $Result.DefaultSelection<Prisma.$InvitationPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const UserRole: {
+  owner: 'owner',
+  admin: 'admin',
+  member: 'member'
+};
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+}
+
+export type UserRole = $Enums.UserRole
+
+export const UserRole: typeof $Enums.UserRole
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -1521,7 +1539,7 @@ export namespace Prisma {
     image: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    role: string | null
+    role: $Enums.UserRole | null
     banned: boolean | null
     banReason: string | null
     banExpires: Date | null
@@ -1539,7 +1557,7 @@ export namespace Prisma {
     image: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    role: string | null
+    role: $Enums.UserRole | null
     banned: boolean | null
     banReason: string | null
     banExpires: Date | null
@@ -1704,7 +1722,7 @@ export namespace Prisma {
     image: string | null
     createdAt: Date
     updatedAt: Date
-    role: string | null
+    role: $Enums.UserRole | null
     banned: boolean | null
     banReason: string | null
     banExpires: Date | null
@@ -1835,7 +1853,7 @@ export namespace Prisma {
       image: string | null
       createdAt: Date
       updatedAt: Date
-      role: string | null
+      role: $Enums.UserRole | null
       banned: boolean | null
       banReason: string | null
       banExpires: Date | null
@@ -2277,7 +2295,7 @@ export namespace Prisma {
     readonly image: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
-    readonly role: FieldRef<"User", 'String'>
+    readonly role: FieldRef<"User", 'UserRole'>
     readonly banned: FieldRef<"User", 'Boolean'>
     readonly banReason: FieldRef<"User", 'String'>
     readonly banExpires: FieldRef<"User", 'DateTime'>
@@ -7205,7 +7223,7 @@ export namespace Prisma {
     id: string | null
     organizationId: string | null
     userId: string | null
-    role: string | null
+    role: $Enums.UserRole | null
     createdAt: Date | null
   }
 
@@ -7213,7 +7231,7 @@ export namespace Prisma {
     id: string | null
     organizationId: string | null
     userId: string | null
-    role: string | null
+    role: $Enums.UserRole | null
     createdAt: Date | null
   }
 
@@ -7328,7 +7346,7 @@ export namespace Prisma {
     id: string
     organizationId: string
     userId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date
     _count: MemberCountAggregateOutputType | null
     _min: MemberMinAggregateOutputType | null
@@ -7411,7 +7429,7 @@ export namespace Prisma {
       id: string
       organizationId: string
       userId: string
-      role: string
+      role: $Enums.UserRole
       createdAt: Date
     }, ExtArgs["result"]["member"]>
     composites: {}
@@ -7841,7 +7859,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Member", 'String'>
     readonly organizationId: FieldRef<"Member", 'String'>
     readonly userId: FieldRef<"Member", 'String'>
-    readonly role: FieldRef<"Member", 'String'>
+    readonly role: FieldRef<"Member", 'UserRole'>
     readonly createdAt: FieldRef<"Member", 'DateTime'>
   }
     
@@ -8271,7 +8289,7 @@ export namespace Prisma {
     id: string | null
     organizationId: string | null
     email: string | null
-    role: string | null
+    role: $Enums.UserRole | null
     status: string | null
     expiresAt: Date | null
     inviterId: string | null
@@ -8281,7 +8299,7 @@ export namespace Prisma {
     id: string | null
     organizationId: string | null
     email: string | null
-    role: string | null
+    role: $Enums.UserRole | null
     status: string | null
     expiresAt: Date | null
     inviterId: string | null
@@ -8406,7 +8424,7 @@ export namespace Prisma {
     id: string
     organizationId: string
     email: string
-    role: string | null
+    role: $Enums.UserRole | null
     status: string
     expiresAt: Date
     inviterId: string
@@ -8499,7 +8517,7 @@ export namespace Prisma {
       id: string
       organizationId: string
       email: string
-      role: string | null
+      role: $Enums.UserRole | null
       status: string
       expiresAt: Date
       inviterId: string
@@ -8931,7 +8949,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Invitation", 'String'>
     readonly organizationId: FieldRef<"Invitation", 'String'>
     readonly email: FieldRef<"Invitation", 'String'>
-    readonly role: FieldRef<"Invitation", 'String'>
+    readonly role: FieldRef<"Invitation", 'UserRole'>
     readonly status: FieldRef<"Invitation", 'String'>
     readonly expiresAt: FieldRef<"Invitation", 'DateTime'>
     readonly inviterId: FieldRef<"Invitation", 'String'>
@@ -9532,6 +9550,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'UserRole'
+   */
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole[]'
+   */
+  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -9559,7 +9591,7 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    role?: StringNullableFilter<"User"> | string | null
+    role?: EnumUserRoleNullableFilter<"User"> | $Enums.UserRole | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
     banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -9608,7 +9640,7 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    role?: StringNullableFilter<"User"> | string | null
+    role?: EnumUserRoleNullableFilter<"User"> | $Enums.UserRole | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
     banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -9652,7 +9684,7 @@ export namespace Prisma {
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
-    role?: StringNullableWithAggregatesFilter<"User"> | string | null
+    role?: EnumUserRoleNullableWithAggregatesFilter<"User"> | $Enums.UserRole | null
     banned?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
     banReason?: StringNullableWithAggregatesFilter<"User"> | string | null
     banExpires?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
@@ -9964,7 +9996,7 @@ export namespace Prisma {
     id?: StringFilter<"Member"> | string
     organizationId?: StringFilter<"Member"> | string
     userId?: StringFilter<"Member"> | string
-    role?: StringFilter<"Member"> | string
+    role?: EnumUserRoleFilter<"Member"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"Member"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9987,7 +10019,7 @@ export namespace Prisma {
     NOT?: MemberWhereInput | MemberWhereInput[]
     organizationId?: StringFilter<"Member"> | string
     userId?: StringFilter<"Member"> | string
-    role?: StringFilter<"Member"> | string
+    role?: EnumUserRoleFilter<"Member"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"Member"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10011,7 +10043,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Member"> | string
     organizationId?: StringWithAggregatesFilter<"Member"> | string
     userId?: StringWithAggregatesFilter<"Member"> | string
-    role?: StringWithAggregatesFilter<"Member"> | string
+    role?: EnumUserRoleWithAggregatesFilter<"Member"> | $Enums.UserRole
     createdAt?: DateTimeWithAggregatesFilter<"Member"> | Date | string
   }
 
@@ -10022,7 +10054,7 @@ export namespace Prisma {
     id?: StringFilter<"Invitation"> | string
     organizationId?: StringFilter<"Invitation"> | string
     email?: StringFilter<"Invitation"> | string
-    role?: StringNullableFilter<"Invitation"> | string | null
+    role?: EnumUserRoleNullableFilter<"Invitation"> | $Enums.UserRole | null
     status?: StringFilter<"Invitation"> | string
     expiresAt?: DateTimeFilter<"Invitation"> | Date | string
     inviterId?: StringFilter<"Invitation"> | string
@@ -10049,7 +10081,7 @@ export namespace Prisma {
     NOT?: InvitationWhereInput | InvitationWhereInput[]
     organizationId?: StringFilter<"Invitation"> | string
     email?: StringFilter<"Invitation"> | string
-    role?: StringNullableFilter<"Invitation"> | string | null
+    role?: EnumUserRoleNullableFilter<"Invitation"> | $Enums.UserRole | null
     status?: StringFilter<"Invitation"> | string
     expiresAt?: DateTimeFilter<"Invitation"> | Date | string
     inviterId?: StringFilter<"Invitation"> | string
@@ -10077,7 +10109,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Invitation"> | string
     organizationId?: StringWithAggregatesFilter<"Invitation"> | string
     email?: StringWithAggregatesFilter<"Invitation"> | string
-    role?: StringNullableWithAggregatesFilter<"Invitation"> | string | null
+    role?: EnumUserRoleNullableWithAggregatesFilter<"Invitation"> | $Enums.UserRole | null
     status?: StringWithAggregatesFilter<"Invitation"> | string
     expiresAt?: DateTimeWithAggregatesFilter<"Invitation"> | Date | string
     inviterId?: StringWithAggregatesFilter<"Invitation"> | string
@@ -10091,7 +10123,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -10113,7 +10145,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -10135,7 +10167,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10157,7 +10189,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10179,7 +10211,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -10197,7 +10229,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10215,7 +10247,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -10562,7 +10594,7 @@ export namespace Prisma {
 
   export type MemberCreateInput = {
     id: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
     organization: OrganizationCreateNestedOneWithoutMembersInput
     user: UserCreateNestedOneWithoutMembersInput
@@ -10572,13 +10604,13 @@ export namespace Prisma {
     id: string
     organizationId: string
     userId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
   }
 
   export type MemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMembersNestedInput
     user?: UserUpdateOneRequiredWithoutMembersNestedInput
@@ -10588,7 +10620,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -10596,13 +10628,13 @@ export namespace Prisma {
     id: string
     organizationId: string
     userId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
   }
 
   export type MemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -10610,14 +10642,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InvitationCreateInput = {
     id: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     organization: OrganizationCreateNestedOneWithoutInvitationsInput
@@ -10628,7 +10660,7 @@ export namespace Prisma {
     id: string
     organizationId: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     inviterId: string
@@ -10637,7 +10669,7 @@ export namespace Prisma {
   export type InvitationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutInvitationsNestedInput
@@ -10648,7 +10680,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inviterId?: StringFieldUpdateOperationsInput | string
@@ -10658,7 +10690,7 @@ export namespace Prisma {
     id: string
     organizationId: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     inviterId: string
@@ -10667,7 +10699,7 @@ export namespace Prisma {
   export type InvitationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10676,7 +10708,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inviterId?: StringFieldUpdateOperationsInput | string
@@ -10726,6 +10758,13 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type EnumUserRoleNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumUserRoleNullableFilter<$PrismaModel> | $Enums.UserRole | null
   }
 
   export type BoolNullableFilter<$PrismaModel = never> = {
@@ -10901,6 +10940,16 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type EnumUserRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumUserRoleNullableWithAggregatesFilter<$PrismaModel> | $Enums.UserRole | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+  }
+
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
@@ -11069,6 +11118,13 @@ export namespace Prisma {
     metadata?: SortOrder
   }
 
+  export type EnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
   export type OrganizationScalarRelationFilter = {
     is?: OrganizationWhereInput
     isNot?: OrganizationWhereInput
@@ -11096,6 +11152,16 @@ export namespace Prisma {
     userId?: SortOrder
     role?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type InvitationCountOrderByAggregateInput = {
@@ -11198,6 +11264,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type NullableEnumUserRoleFieldUpdateOperationsInput = {
+    set?: $Enums.UserRole | null
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -11444,6 +11514,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type EnumUserRoleFieldUpdateOperationsInput = {
+    set?: $Enums.UserRole
+  }
+
   export type OrganizationUpdateOneRequiredWithoutMembersNestedInput = {
     create?: XOR<OrganizationCreateWithoutMembersInput, OrganizationUncheckedCreateWithoutMembersInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutMembersInput
@@ -11530,6 +11604,13 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedEnumUserRoleNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumUserRoleNullableFilter<$PrismaModel> | $Enums.UserRole | null
   }
 
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
@@ -11626,6 +11707,16 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedEnumUserRoleNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel> | null
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumUserRoleNullableWithAggregatesFilter<$PrismaModel> | $Enums.UserRole | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleNullableFilter<$PrismaModel>
+  }
+
   export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
@@ -11646,6 +11737,23 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
+  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -11724,7 +11832,7 @@ export namespace Prisma {
 
   export type MemberCreateWithoutUserInput = {
     id: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
     organization: OrganizationCreateNestedOneWithoutMembersInput
   }
@@ -11732,7 +11840,7 @@ export namespace Prisma {
   export type MemberUncheckedCreateWithoutUserInput = {
     id: string
     organizationId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
   }
 
@@ -11749,7 +11857,7 @@ export namespace Prisma {
   export type InvitationCreateWithoutUserInput = {
     id: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     organization: OrganizationCreateNestedOneWithoutInvitationsInput
@@ -11759,7 +11867,7 @@ export namespace Prisma {
     id: string
     organizationId: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
   }
@@ -11864,7 +11972,7 @@ export namespace Prisma {
     id?: StringFilter<"Member"> | string
     organizationId?: StringFilter<"Member"> | string
     userId?: StringFilter<"Member"> | string
-    role?: StringFilter<"Member"> | string
+    role?: EnumUserRoleFilter<"Member"> | $Enums.UserRole
     createdAt?: DateTimeFilter<"Member"> | Date | string
   }
 
@@ -11891,7 +11999,7 @@ export namespace Prisma {
     id?: StringFilter<"Invitation"> | string
     organizationId?: StringFilter<"Invitation"> | string
     email?: StringFilter<"Invitation"> | string
-    role?: StringNullableFilter<"Invitation"> | string | null
+    role?: EnumUserRoleNullableFilter<"Invitation"> | $Enums.UserRole | null
     status?: StringFilter<"Invitation"> | string
     expiresAt?: DateTimeFilter<"Invitation"> | Date | string
     inviterId?: StringFilter<"Invitation"> | string
@@ -11905,7 +12013,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -11926,7 +12034,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -11963,7 +12071,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11984,7 +12092,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12005,7 +12113,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -12026,7 +12134,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -12063,7 +12171,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12084,7 +12192,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12099,7 +12207,7 @@ export namespace Prisma {
 
   export type MemberCreateWithoutOrganizationInput = {
     id: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
     user: UserCreateNestedOneWithoutMembersInput
   }
@@ -12107,7 +12215,7 @@ export namespace Prisma {
   export type MemberUncheckedCreateWithoutOrganizationInput = {
     id: string
     userId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
   }
 
@@ -12124,7 +12232,7 @@ export namespace Prisma {
   export type InvitationCreateWithoutOrganizationInput = {
     id: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     user: UserCreateNestedOneWithoutInvitationsInput
@@ -12133,7 +12241,7 @@ export namespace Prisma {
   export type InvitationUncheckedCreateWithoutOrganizationInput = {
     id: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     inviterId: string
@@ -12214,7 +12322,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -12235,7 +12343,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -12303,7 +12411,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12324,7 +12432,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12370,7 +12478,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -12391,7 +12499,7 @@ export namespace Prisma {
     image?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    role?: string | null
+    role?: $Enums.UserRole | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
@@ -12459,7 +12567,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12480,7 +12588,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12523,7 +12631,7 @@ export namespace Prisma {
   export type MemberCreateManyUserInput = {
     id: string
     organizationId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
   }
 
@@ -12531,7 +12639,7 @@ export namespace Prisma {
     id: string
     organizationId: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
   }
@@ -12619,7 +12727,7 @@ export namespace Prisma {
 
   export type MemberUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMembersNestedInput
   }
@@ -12627,21 +12735,21 @@ export namespace Prisma {
   export type MemberUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MemberUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InvitationUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutInvitationsNestedInput
@@ -12651,7 +12759,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12660,7 +12768,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12668,14 +12776,14 @@ export namespace Prisma {
   export type MemberCreateManyOrganizationInput = {
     id: string
     userId: string
-    role: string
+    role: $Enums.UserRole
     createdAt: Date | string
   }
 
   export type InvitationCreateManyOrganizationInput = {
     id: string
     email: string
-    role?: string | null
+    role?: $Enums.UserRole | null
     status: string
     expiresAt: Date | string
     inviterId: string
@@ -12683,7 +12791,7 @@ export namespace Prisma {
 
   export type MemberUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutMembersNestedInput
   }
@@ -12691,21 +12799,21 @@ export namespace Prisma {
   export type MemberUncheckedUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MemberUncheckedUpdateManyWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InvitationUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutInvitationsNestedInput
@@ -12714,7 +12822,7 @@ export namespace Prisma {
   export type InvitationUncheckedUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inviterId?: StringFieldUpdateOperationsInput | string
@@ -12723,7 +12831,7 @@ export namespace Prisma {
   export type InvitationUncheckedUpdateManyWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
     status?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inviterId?: StringFieldUpdateOperationsInput | string

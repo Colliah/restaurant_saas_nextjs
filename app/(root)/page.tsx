@@ -1,43 +1,22 @@
-"use client";
+import { CreateOrganizationDialog } from "@/components/organization/create-organization-dialog";
+import { Button } from "@/components/ui/button";
+import { getOrganizations } from "@/lib/actions/organization-actions";
+import Link from "next/link";
+import React from "react";
 
-import { useEffect, useState } from "react";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-};
-
-export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
-
-  useEffect(() => {
-    fetch("/api/users")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Fetched users:", data);
-        setUsers(data);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+export default async function Page() {
+  const organization = await getOrganizations();
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Users</h1>
-      {users.length === 0 ? (
-        <p>No users</p>
-      ) : (
-        <ul className="list-disc pl-5">
-          {users.map((u) => (
-            <li key={u.id}>
-              {u.name} <span className="text-gray-500">({u.email})</span>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div>
+      <CreateOrganizationDialog />
+      <div>
+        {organization.map((org) => (
+          <Button variant="outline" key={org.id} asChild>
+            <Link href={`/organization/${org.slug}`}>{org.name}</Link>
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }

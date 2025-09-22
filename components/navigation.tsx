@@ -1,16 +1,22 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { OrganizationSwitcher } from "./organization/organization-swicher";
+import { getOrganizations } from "@/lib/actions/organization-actions";
 
 export default async function Navigation() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
+  const organizations = await getOrganizations();
+
   return (
     <header className="bg-white backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          <OrganizationSwitcher organizations={organizations} />
+
           <nav className="flex items-center space-x-6">
             {session && (
               <Link
