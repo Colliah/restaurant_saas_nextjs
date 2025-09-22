@@ -1,16 +1,22 @@
 import { auth } from "@/lib/auth";
-import { NextRequest } from "next/server";
+import { headers } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { invitationId: string } }
 ) {
   const { invitationId } = params;
-  const data = await auth.api.acceptInvitation({
-    body: {
-      invitationId,
-    },
-  });
-  console.log(data);
+  try {
+    const data = await auth.api.acceptInvitation({
+      body: {
+        invitationId,
+      },
+      headers: await headers(),
+    });
+    console.log(data);
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  } catch (error) {
+    console.log(error);
+  }
 }
-

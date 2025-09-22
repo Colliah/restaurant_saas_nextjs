@@ -84,8 +84,8 @@ export const auth = betterAuth({
         member,
       },
       async sendInvitationEmail(data) {
-        const inviteLink = `https://example.com/accept-invitation/${data.id}`;
-        resend.emails.send({
+        const inviteLink = `http://localhost:3000/api/accept-invitation/${data.id}`;
+        await resend.emails.send({
           from: "Acme <onboarding@resend.dev>",
           to: data.email,
           subject: "You've been invited to join our organization",
