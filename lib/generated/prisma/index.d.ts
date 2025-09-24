@@ -54,8 +54,9 @@ export type Invitation = $Result.DefaultSelection<Prisma.$InvitationPayload>
  */
 export namespace $Enums {
   export const UserRole: {
+  superadmin: 'superadmin',
   owner: 'owner',
-  admin: 'admin',
+  staff: 'staff',
   member: 'member'
 };
 

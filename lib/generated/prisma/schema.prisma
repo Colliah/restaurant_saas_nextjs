@@ -9,9 +9,10 @@ datasource db {
 }
 
 enum UserRole {
-  owner  @map("owner")
-  admin  @map("admin")
-  member @map("member")
+  superadmin @map("superadmin")
+  owner      @map("owner")
+  staff      @map("staff")
+  member     @map("member")
 }
 
 model User {
