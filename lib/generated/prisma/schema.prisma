@@ -13,54 +13,167 @@ enum UserRole {
   owner      @map("owner")
   staff      @map("staff")
   member     @map("member")
+  customer   @map("customer")
+}
+
+enum Language {
+  VI @map("VI")
+  EN @map("EN")
+}
+
+enum LeaveRequestStatus {
+  PENDING  @map("PENDING")
+  APPROVED @map("APPROVED")
+  REJECTED @map("REJECTED")
+}
+
+enum MenuItemStatus {
+  AVAILABLE   @map("AVAILABLE")
+  UNAVAILABLE @map("UNAVAILABLE")
+}
+
+enum TableStatus {
+  AVAILABLE @map("AVAILABLE")
+  OCCUPIED  @map("OCCUPIED")
+  RESERVED  @map("RESERVED")
+}
+
+enum ReservationStatus {
+  PENDING   @map("PENDING")
+  CONFIRMED @map("CONFIRMED")
+  CANCELLED @map("CANCELLED")
+  COMPLETED @map("COMPLETED")
+}
+
+enum OrderStatus {
+  PENDING           @map("PENDING")
+  CONFIRMED         @map("CONFIRMED")
+  PREPARING         @map("PREPARING")
+  READY_FOR_PICKUP  @map("READY_FOR_PICKUP")
+  READY_FOR_SERVICE @map("READY_FOR_SERVICE")
+  SERVED            @map("SERVED")
+  PAID              @map("PAID")
+  CANCELLED         @map("CANCELLED")
+  REFUNDED          @map("REFUNDED")
+}
+
+enum PaymentMethod {
+  CASH          @map("CASH")
+  CARD          @map("CARD")
+  BANK_TRANSFER @map("BANK_TRANSFER")
+  VOUCHER       @map("VOUCHER")
+}
+
+enum PaymentStatus {
+  PENDING   @map("PENDING")
+  COMPLETED @map("COMPLETED")
+  FAILED    @map("FAILED")
+  REFUNDED  @map("REFUNDED")
+}
+
+enum CustomerTier {
+  BRONZE   @map("BRONZE")
+  SILVER   @map("SILVER")
+  GOLD     @map("GOLD")
+  PLATINUM @map("PLATINUM")
+}
+
+enum VoucherType {
+  FIXED_AMOUNT @map("FIXED_AMOUNT")
+  PERCENTAGE   @map("PERCENTAGE")
+}
+
+enum NotificationType {
+  PROMOTION                @map("PROMOTION")
+  ORDER_STATUS             @map("ORDER_STATUS")
+  RESERVATION_CONFIRMATION @map("RESERVATION_CONFIRMATION")
+  LEAVE_REQUEST_UPDATE     @map("LEAVE_REQUEST_UPDATE")
+}
+
+enum Status {
+  ACTIVE   @map("ACTIVE")
+  INACTIVE @map("INACTIVE")
+  DELETED  @map("DELETED")
+}
+
+enum IngredientUnit {
+  KG    @map("KG")
+  GRAM  @map("GRAM")
+  LITER @map("LITER")
+  ML    @map("ML")
+  CUP   @map("CUP")
+  PIECE @map("PIECE")
+}
+
+enum IngredientTransactionType {
+  IMPORT @map("IMPORT")
+  EXPORT @map("EXPORT")
+}
+
+enum SalaryType {
+  HOURLY  @map("HOURLY")
+  MONTHLY @map("MONTHLY")
+  MIXED   @map("MIXED")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
 
 model User {
-  id                  String       @id
-  name                String
-  email               String
-  emailVerified       Boolean      @default(false)
-  image               String?
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @default(now()) @updatedAt
-  role                UserRole?
-  banned              Boolean?     @default(false)
-  banReason           String?
-  banExpires          DateTime?
-  phoneNumber         String?
-  phoneNumberVerified Boolean?
-  username            String?
-  displayUsername     String?
-  sessions            Session[]
-  accounts            Account[]
-  members             Member[]
-  invitations         Invitation[]
+  id                     String                  @id @default(cuid())
+  name                   String
+  email                  String
+  emailVerified          Boolean
+  image                  String?
+  role                   UserRole?               @default(customer)
+  createdAt              DateTime
+  updatedAt              DateTime
+  employeeProfile        EmployeeProfile?
+  customerProfile        CustomerProfile?
+  sessions               Session[]
+  accounts               Account[]
+  orders                 Order[]
+  reservations           Reservation[]
+  reviews                Review[]
+  notifications          Notification[]          @relation("UserNotifications")
+  leaveRequests          LeaveRequest[]          @relation("ApprovedLeaveRequests")
+  sentNotifications      Notification[]          @relation("SentNotifications")
+  ingredientTransactions IngredientTransaction[]
+
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
 
   @@unique([email])
-  @@unique([phoneNumber])
-  @@unique([username])
-  @@map("user")
+  @@map("users")
 }
 
 model Session {
-  id                   String   @id
-  expiresAt            DateTime
-  token                String
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  ipAddress            String?
-  userAgent            String?
-  userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activeOrganizationId String?
-  impersonatedBy       String?
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  impersonatedBy String?
 
   @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(cuid())
   accountId             String
   providerId            String
   userId                String
@@ -72,59 +185,465 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime
+  updatedAt             DateTime
 
   @@map("account")
 }
 
 model Verification {
-  id         String   @id
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  createdAt  DateTime?
+  updatedAt  DateTime?
 
   @@map("verification")
 }
 
-model Organization {
-  id          String       @id
-  name        String
-  slug        String?
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
-  members     Member[]
-  invitations Invitation[]
+model EmployeeProfile {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeCode  String         @unique
+  position      String?
+  dateOfBirth   DateTime?
+  phoneNumber   String?
+  salaryType    SalaryType     @default(MONTHLY)
+  baseSalary    Float?
+  hourlyRate    Float?
+  shifts        Timekeeping[]
+  leaveRequests LeaveRequest[]
+  payrolls      Payroll[]
+  addressId     String?        @unique
+  address       Address?       @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
 
-  @@unique([slug])
-  @@map("organization")
+  @@map("employee_profiles")
 }
 
-model Member {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           UserRole
-  createdAt      DateTime
+model Shift {
+  id           String        @id @default(cuid())
+  name         String
+  startTime    String
+  endTime      String
+  timekeepings Timekeeping[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
 
-  @@map("member")
+  @@map("shifts")
 }
 
-model Invitation {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  email          String
-  role           UserRole?
-  status         String
-  expiresAt      DateTime
-  inviterId      String
-  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+model Timekeeping {
+  id            String          @id @default(cuid())
+  employeeId    String
+  employee      EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  shiftId       String
+  shift         Shift           @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  checkIn       DateTime
+  checkOut      DateTime?
+  workDate      DateTime        @db.Date
+  regularHours  Float?
+  overtimeHours Float?
+  totalHours    Float?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
 
-  @@map("invitation")
+  @@map("timekeepings")
+}
+
+model LeaveRequest {
+  id           String             @id @default(cuid())
+  employeeId   String
+  employee     EmployeeProfile    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  startDate    DateTime
+  endDate      DateTime
+  reason       String
+  status       LeaveRequestStatus @default(PENDING)
+  approvedById String?
+  approvedBy   User?              @relation("ApprovedLeaveRequests", fields: [approvedById], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("leave_requests")
+}
+
+model Payroll {
+  id                String          @id @default(cuid())
+  employeeId        String
+  employee          EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  month             Int
+  year              Int
+  baseSalary        Float
+  regularHours      Float           @default(0)
+  regularHourRate   Float           @default(0)
+  regularHourSalary Float           @default(0)
+  overtimeHours     Float           @default(0)
+  overtimeRate      Float           @default(0)
+  overtimeSalary    Float           @default(0)
+  bonus             Float           @default(0)
+  allowances        Float           @default(0)
+  deductions        Float           @default(0)
+  grossSalary       Float
+  netSalary         Float
+  paidDate          DateTime?
+  paidAmount        Float?
+  notes             String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+
+  @@unique([employeeId, month, year])
+  @@map("payrolls")
+}
+
+model Ingredient {
+  id                String                  @id @default(cuid())
+  slug              String                  @unique
+  name              String
+  code              String?
+  lowStockThreshold Float?                  @default(10)
+  imageId           String
+  image             Image                   @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  unit              IngredientUnit
+  recipeItems       RecipeIngredient[]
+  transactions      IngredientTransaction[]
+
+  @@map("ingredients")
+}
+
+model IngredientTransaction {
+  id           String                    @id @default(cuid())
+  ingredientId String
+  ingredient   Ingredient                @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  type         IngredientTransactionType
+  quantity     Float
+  price        Float
+  notes        String?
+  createdById  String?
+  createdBy    User?                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt    DateTime                  @default(now())
+
+  @@index([ingredientId])
+  @@index([createdAt])
+  @@index([type])
+  @@map("ingredient_transactions")
+}
+
+model RecipeIngredient {
+  recipeId     String
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  quantity     Float // Số lượng cần cho công thức
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+
+  @@id([recipeId, ingredientId])
+  @@map("recipe_ingredients")
+}
+
+model Recipe {
+  id              String             @id @default(cuid())
+  name            String
+  description     String?
+  slug            String             @unique
+  estimatedCost   Decimal?           @db.Decimal(10, 2)
+  preparationTime Int?
+  servingSize     Int?               @default(1)
+  menuItem        MenuItem?
+  ingredients     RecipeIngredient[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("recipes")
+}
+
+model MenuCategory {
+  id            String     @id @default(cuid())
+  name          String
+  nameEn        String?
+  slug          String     @unique
+  imageId       String?
+  image         Image?     @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  description   String?
+  descriptionEn String?
+  isActive      Boolean    @default(true)
+  menuItems     MenuItem[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+
+  @@map("menu_categories")
+}
+
+model MenuItem {
+  id            String         @id @default(cuid())
+  name          String
+  nameEn        String?
+  slug          String         @unique
+  description   String?
+  descriptionEn String?
+  price         Float
+  images        Image[]
+  status        MenuItemStatus @default(AVAILABLE)
+  recordStatus  Status         @default(ACTIVE) // Thêm field này
+  isActive      Boolean        @default(true)
+  categoryId    String
+  category      MenuCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  recipeId      String?        @unique
+  recipe        Recipe?        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  orderItems    OrderItem[]
+  reviews       Review[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+
+  @@map("menu_items")
+}
+
+model RestaurantTable {
+  id           String        @id @default(cuid())
+  tableNumber  String        @unique
+  capacity     Int
+  status       TableStatus   @default(AVAILABLE)
+  qrCodeUrl    String?
+  isActive     Boolean       @default(true)
+  orders       Order[]
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+
+  @@index([status])
+  @@map("restaurant_tables")
+}
+
+model Reservation {
+  id              String            @id @default(cuid())
+  customerId      String
+  customer        User              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tableId         String
+  table           RestaurantTable   @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  reservationTime DateTime
+  numberOfGuests  Int
+  notes           String?
+  status          ReservationStatus @default(PENDING)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+
+  @@index([customerId])
+  @@index([tableId])
+  @@index([reservationTime])
+  @@map("reservations")
+}
+
+model Order {
+  id            String           @id @default(cuid())
+  tableId       String
+  table         RestaurantTable  @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      CustomerProfile? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  status        OrderStatus      @default(PENDING)
+  totalAmount   Float            @default(0)
+  finalAmount   Float            @default(0)
+  notes         String?
+  parentOrderId String?
+  parentOrder   Order?           @relation("SplitOrders", fields: [parentOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  childOrders   Order[]          @relation("SplitOrders")
+  items         OrderItem[]
+  payment       Payment?
+  vouchers      Voucher[]        @relation("OrderVouchers")
+  user          User[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([customerId])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String    @id @default(cuid())
+  orderId    String
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem   MenuItem  @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  quantity   Int
+  price      Float
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@index([orderId])
+  @@index([menuItemId])
+  @@map("order_items")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount        Float
+  paymentMethod PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  transactionId String? // Mã giao dịch từ bên thứ 3
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@map("payments")
+}
+
+model Voucher {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  type          VoucherType
+  value         Float
+  description   String?
+  maxDiscount   Float?
+  minOrderValue Float?
+  startDate     DateTime
+  endDate       DateTime
+  usageLimit    Int?
+  usageCount    Int         @default(0)
+  isActive      Boolean     @default(true)
+  orders        Order[]     @relation("OrderVouchers")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  @@map("vouchers")
+}
+
+model CustomerProfile {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loyaltyPoints Int          @default(0)
+  tier          CustomerTier @default(BRONZE)
+  phoneNumber   String?
+  addressId     String?      @unique
+  address       Address?     @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+  Order         Order[]
+
+  @@map("customer_profiles")
+}
+
+model Review {
+  id         String    @id @default(cuid())
+  customerId String
+  customer   User      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  menuItemId String?
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  rating     Int
+  comment    String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  senderId  String?
+  sender    User?            @relation("SentNotifications", fields: [senderId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  deletedAt DateTime?
+
+  @@map("notifications")
+}
+
+model Address {
+  id              String            @id @default(cuid())
+  street          String
+  ward            Json
+  district        Json
+  province        Json
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+  employeeProfile EmployeeProfile[]
+  customerProfile CustomerProfile[]
+
+  @@map("addresses")
+}
+
+model Image {
+  id             String         @id @default(cuid())
+  key            String
+  ufsUrl         String
+  ingredients    Ingredient[]
+  menuCategories MenuCategory[]
+  menuItem       MenuItem?      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  menuItemId     String?
+}
+
+model WorkingDayConfig {
+  id            String    @id @default(cuid())
+  dayOfWeek     DayOfWeek
+  isWorkingDay  Boolean   @default(true)
+  standardHours Float     @default(8)
+  startTime     String?
+  endTime       String?
+  overtimeRate  Float     @default(1.5)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([dayOfWeek])
+  @@map("working_day_configs")
+}
+
+model Holiday {
+  id         String   @id @default(cuid())
+  name       String
+  date       DateTime @db.Date
+  isAnnual   Boolean  @default(false)
+  multiplier Float    @default(3.0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("holidays")
+}
+
+model SalaryConfig {
+  id                       String   @id @default(cuid())
+  socialInsuranceRate      Float    @default(0.08) // Bảo hiểm xã hội 8%
+  healthInsuranceRate      Float    @default(0.015) // Bảo hiểm y tế 1.5%
+  unemploymentRate         Float    @default(0.01) // Bảo hiểm thất nghiệp 1%
+  minWagePerHour           Float? // Lương tối thiểu/giờ
+  maxOvertimeHoursPerDay   Float    @default(4) // Giờ overtime tối đa/ngày
+  maxOvertimeHoursPerMonth Float    @default(40) // Giờ overtime tối đa/tháng
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@map("salary_configs")
 }
