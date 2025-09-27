@@ -15,7 +15,7 @@ import { resend } from "./resend";
 import VerifyOTP from "@/components/email/verify-otp";
 import OrganizationInvitation from "@/components/email/organization-invite";
 import { getActiveOrganization } from "./actions/organization-actions";
-import { ac, owner, admin, member } from "./permission";
+import { ac, owner, superadmin, member } from "./permission";
 
 const githubClientId = process.env.GITHUB_CLIENT_ID!;
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET!;
@@ -80,7 +80,7 @@ export const auth = betterAuth({
       ac,
       roles: {
         owner,
-        admin,
+        superadmin,
         member,
       },
       async sendInvitationEmail(data) {

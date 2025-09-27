@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/select";
 import { authClient } from "@/lib/auth-client";
 import { Organization } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface OrganizationProps {
@@ -18,20 +17,12 @@ interface OrganizationProps {
 
 export function OrganizationSwitcher({ organizations }: OrganizationProps) {
   const { data: activeOrganization } = authClient.useActiveOrganization();
-  const router = useRouter();
 
   const handleChangeOrganization = async (organizationId: string) => {
     try {
       await authClient.organization.setActive({
         organizationId,
       });
-
-      const org = organizations.find((o) => o.id === organizationId);
-      if (org?.slug) {
-        router.push(`/organization/${org.slug}`);
-      } else {
-        router.push(`/organization/${organizationId}`);
-      }
 
       toast.success("Organization switched successfully");
     } catch (error) {

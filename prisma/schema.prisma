@@ -1,3 +1,5 @@
+// schema.prisma
+
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -8,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --- ENUMS (Không thay đổi) ---
 enum UserRole {
   superadmin @map("superadmin")
   owner      @map("owner")
@@ -126,6 +129,7 @@ enum DayOfWeek {
   SUNDAY
 }
 
+// --- MODELS TOÀN CỤC (Không thay đổi) ---
 model User {
   id                     String                  @id @default(cuid())
   name                   String
@@ -136,7 +140,7 @@ model User {
   createdAt              DateTime
   updatedAt              DateTime
   employeeProfile        EmployeeProfile?
-  customerProfile        CustomerProfile?
+  customerProfile        CustomerProfile[] // MODIFIED: Một user có thể có nhiều customer profile, mỗi cái cho một org
   sessions               Session[]
   accounts               Account[]
   orders                 Order[]
@@ -146,30 +150,14 @@ model User {
   leaveRequests          LeaveRequest[]          @relation("ApprovedLeaveRequests")
   sentNotifications      Notification[]          @relation("SentNotifications")
   ingredientTransactions IngredientTransaction[]
-
-  banned     Boolean?
-  banReason  String?
-  banExpires DateTime?
+  banned                 Boolean?
+  banReason              String?
+  banExpires             DateTime?
+  Member                 Member[]
+  Invitation             Invitation[]
 
   @@unique([email])
   @@map("users")
-}
-
-model Session {
-  id        String   @id @default(cuid())
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-
-  impersonatedBy String?
-
-  @@unique([token])
-  @@map("session")
 }
 
 model Account {
@@ -202,11 +190,93 @@ model Verification {
   @@map("verification")
 }
 
+// --- MODELS CỐT LÕI CỦA MULTI-TENANCY (Không thay đổi) ---
+model Organization {
+  id          String       @id
+  name        String
+  slug        String?
+  logo        String?
+  createdAt   DateTime
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+  Session     Session[]
+
+  // MODIFIED: Thêm các relation đến các model phụ thuộc
+  employeeProfiles      EmployeeProfile[]
+  shifts                Shift[]
+  ingredients           Ingredient[]
+  ingredientTransaction IngredientTransaction[]
+  recipes               Recipe[]
+  menuCategories        MenuCategory[]
+  menuItems             MenuItem[]
+  restaurantTables      RestaurantTable[]
+  reservations          Reservation[]
+  orders                Order[]
+  vouchers              Voucher[]
+  customerProfiles      CustomerProfile[]
+  reviews               Review[]
+  notifications         Notification[]
+  workingDayConfigs     WorkingDayConfig[]
+  holidays              Holiday[]
+  salaryConfigs         SalaryConfig[]
+  images                Image[]
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           UserRole
+  createdAt      DateTime
+
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           UserRole?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
+
+model Session {
+  id                   String        @id @default(cuid())
+  expiresAt            DateTime
+  token                String
+  createdAt            DateTime
+  updatedAt            DateTime
+  ipAddress            String?
+  userAgent            String?
+  userId               String?
+  user                 User?         @relation(fields: [userId], references: [id])
+  impersonatedBy       String?
+  activeOrganizationId String?
+  activeOrganization   Organization? @relation(fields: [activeOrganizationId], references: [id])
+
+  @@unique([token])
+  @@map("session")
+}
+
+// --- MODELS PHỤ THUỘC VÀO ORGANIZATION (Đã chỉnh sửa) ---
+
 model EmployeeProfile {
   id            String         @id @default(cuid())
   userId        String         @unique
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  employeeCode  String         @unique
+  employeeCode  String
   position      String?
   dateOfBirth   DateTime?
   phoneNumber   String?
@@ -222,6 +292,12 @@ model EmployeeProfile {
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId]) // Một user chỉ có 1 profile nhân viên/org
+  @@unique([organizationId, employeeCode]) // Mã nhân viên duy nhất/org
   @@map("employee_profiles")
 }
 
@@ -234,6 +310,10 @@ model Shift {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
+
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("shifts")
 }
@@ -254,6 +334,7 @@ model Timekeeping {
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
 
+  // Không cần orgId trực tiếp vì đã có qua EmployeeProfile và Shift
   @@map("timekeepings")
 }
 
@@ -267,11 +348,11 @@ model LeaveRequest {
   status       LeaveRequestStatus @default(PENDING)
   approvedById String?
   approvedBy   User?              @relation("ApprovedLeaveRequests", fields: [approvedById], references: [id], onDelete: Cascade)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  deletedAt    DateTime?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
+  // Không cần orgId trực tiếp vì đã có qua EmployeeProfile
   @@map("leave_requests")
 }
 
@@ -300,13 +381,14 @@ model Payroll {
   updatedAt         DateTime        @updatedAt
   deletedAt         DateTime?
 
+  // Không cần orgId trực tiếp vì đã có qua EmployeeProfile
   @@unique([employeeId, month, year])
   @@map("payrolls")
 }
 
 model Ingredient {
   id                String                  @id @default(cuid())
-  slug              String                  @unique
+  slug              String
   name              String
   code              String?
   lowStockThreshold Float?                  @default(10)
@@ -316,6 +398,11 @@ model Ingredient {
   recipeItems       RecipeIngredient[]
   transactions      IngredientTransaction[]
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
   @@map("ingredients")
 }
 
@@ -331,6 +418,10 @@ model IngredientTransaction {
   createdBy    User?                     @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdAt    DateTime                  @default(now())
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@index([ingredientId])
   @@index([createdAt])
   @@index([type])
@@ -342,7 +433,7 @@ model RecipeIngredient {
   recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   ingredientId String
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
-  quantity     Float // Số lượng cần cho công thức
+  quantity     Float
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   deletedAt    DateTime?
@@ -355,17 +446,21 @@ model Recipe {
   id              String             @id @default(cuid())
   name            String
   description     String?
-  slug            String             @unique
+  slug            String
   estimatedCost   Decimal?           @db.Decimal(10, 2)
   preparationTime Int?
   servingSize     Int?               @default(1)
   menuItem        MenuItem?
   ingredients     RecipeIngredient[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  deletedAt       DateTime?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@unique([organizationId, slug])
   @@map("recipes")
 }
 
@@ -373,7 +468,7 @@ model MenuCategory {
   id            String     @id @default(cuid())
   name          String
   nameEn        String?
-  slug          String     @unique
+  slug          String
   imageId       String?
   image         Image?     @relation(fields: [imageId], references: [id], onDelete: Cascade)
   description   String?
@@ -384,6 +479,11 @@ model MenuCategory {
   updatedAt     DateTime   @updatedAt
   deletedAt     DateTime?
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
   @@map("menu_categories")
 }
 
@@ -391,13 +491,13 @@ model MenuItem {
   id            String         @id @default(cuid())
   name          String
   nameEn        String?
-  slug          String         @unique
+  slug          String
   description   String?
   descriptionEn String?
   price         Float
   images        Image[]
   status        MenuItemStatus @default(AVAILABLE)
-  recordStatus  Status         @default(ACTIVE) // Thêm field này
+  recordStatus  Status         @default(ACTIVE)
   isActive      Boolean        @default(true)
   categoryId    String
   category      MenuCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -409,12 +509,17 @@ model MenuItem {
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
   @@map("menu_items")
 }
 
 model RestaurantTable {
   id           String        @id @default(cuid())
-  tableNumber  String        @unique
+  tableNumber  String
   capacity     Int
   status       TableStatus   @default(AVAILABLE)
   qrCodeUrl    String?
@@ -425,6 +530,11 @@ model RestaurantTable {
   updatedAt    DateTime      @updatedAt
   deletedAt    DateTime?
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, tableNumber])
   @@index([status])
   @@map("restaurant_tables")
 }
@@ -442,6 +552,10 @@ model Reservation {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   deletedAt       DateTime?
+
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([customerId])
   @@index([tableId])
@@ -466,10 +580,13 @@ model Order {
   payment       Payment?
   vouchers      Voucher[]        @relation("OrderVouchers")
   user          User[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([customerId])
   @@index([createdAt])
@@ -502,7 +619,7 @@ model Payment {
   amount        Float
   paymentMethod PaymentMethod
   status        PaymentStatus @default(PENDING)
-  transactionId String? // Mã giao dịch từ bên thứ 3
+  transactionId String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
@@ -512,7 +629,7 @@ model Payment {
 
 model Voucher {
   id            String      @id @default(cuid())
-  code          String      @unique
+  code          String
   type          VoucherType
   value         Float
   description   String?
@@ -528,12 +645,17 @@ model Voucher {
   updatedAt     DateTime    @updatedAt
   deletedAt     DateTime?
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, code])
   @@map("vouchers")
 }
 
 model CustomerProfile {
   id            String       @id @default(cuid())
-  userId        String       @unique
+  userId        String
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   loyaltyPoints Int          @default(0)
   tier          CustomerTier @default(BRONZE)
@@ -545,6 +667,11 @@ model CustomerProfile {
   deletedAt     DateTime?
   Order         Order[]
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId]) // Một user chỉ có 1 profile khách hàng/org
   @@map("customer_profiles")
 }
 
@@ -559,6 +686,10 @@ model Review {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
+
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }
@@ -577,6 +708,10 @@ model Notification {
   updatedAt DateTime         @updatedAt
   deletedAt DateTime?
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@map("notifications")
 }
 
@@ -592,6 +727,7 @@ model Address {
   employeeProfile EmployeeProfile[]
   customerProfile CustomerProfile[]
 
+  // Address là model chung, không cần organizationId trực tiếp
   @@map("addresses")
 }
 
@@ -605,6 +741,10 @@ model Image {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   menuItemId     String?
+
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model WorkingDayConfig {
@@ -618,7 +758,11 @@ model WorkingDayConfig {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  @@unique([dayOfWeek])
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, dayOfWeek])
   @@map("working_day_configs")
 }
 
@@ -631,19 +775,27 @@ model Holiday {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@map("holidays")
 }
 
 model SalaryConfig {
   id                       String   @id @default(cuid())
-  socialInsuranceRate      Float    @default(0.08) // Bảo hiểm xã hội 8%
-  healthInsuranceRate      Float    @default(0.015) // Bảo hiểm y tế 1.5%
-  unemploymentRate         Float    @default(0.01) // Bảo hiểm thất nghiệp 1%
-  minWagePerHour           Float? // Lương tối thiểu/giờ
-  maxOvertimeHoursPerDay   Float    @default(4) // Giờ overtime tối đa/ngày
-  maxOvertimeHoursPerMonth Float    @default(40) // Giờ overtime tối đa/tháng
+  socialInsuranceRate      Float    @default(0.08)
+  healthInsuranceRate      Float    @default(0.015)
+  unemploymentRate         Float    @default(0.01)
+  minWagePerHour           Float?
+  maxOvertimeHoursPerDay   Float    @default(4)
+  maxOvertimeHoursPerMonth Float    @default(40)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
+
+  // MODIFIED: Thêm quan hệ với Organization
+  organizationId String       @unique // Mỗi org chỉ có 1 config lương
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("salary_configs")
 }

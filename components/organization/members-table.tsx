@@ -7,10 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Member, User } from "@prisma/client";
 import MemberRemove from "./member-remove";
-
-type MemberWithUser = Member & { user: User };
+import { MemberWithUser } from "@/lib/actions/organization-actions";
 
 interface MemberProps {
   members: MemberWithUser[];
@@ -33,7 +31,7 @@ export default function MemberTable({ members }: MemberProps) {
           <TableRow key={mem.id}>
             <TableCell>{mem.user.name}</TableCell>
             <TableCell>{mem.user.email}</TableCell>
-            <TableCell>{mem.user.role}</TableCell>
+            <TableCell>{mem.role}</TableCell>
             <TableCell className="text-right">
               <MemberRemove userId={mem.user.id} />
             </TableCell>
