@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "../auth";
 import { getCurrentUser } from "./auth-actions";
 import { prisma } from "../prisma";
+import { Prisma } from "../generated/prisma";
 
 export async function getOrganizations() {
   const { currentUser } = await getCurrentUser();
@@ -32,6 +33,12 @@ export async function getActiveOrganization(userId: string) {
   });
   return activeOrganization;
 }
+
+export type MemberWithUser = Prisma.MemberGetPayload<{
+  include: {
+    user: true;
+  };
+}>;
 
 export async function getOrganizationBySlug(slug: string) {
   try {
