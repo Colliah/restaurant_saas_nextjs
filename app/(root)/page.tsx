@@ -1,147 +1,154 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { EmployeeDeleteDialog } from "@/components/employee/employee-delete-dialog";
+import { EmployeeDetailsDialog } from "@/components/employee/employee-detail-dialog";
+import { EmployeeForm } from "@/components/employee/employee-form";
 import { Button } from "@/components/ui/button";
-import { X, Plus, Edit } from "lucide-react";
-import { TableForm } from "@/components/tables/table-form";
+import { Pencil, UserRoundSearch, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export default function TableManager() {
-  const [tables, setTables] = useState([]);
+export default function EmployeeListPage() {
+  const [employees, setEmployees] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingTable, setEditingTable] = useState(null);
+  const [editingEmployee, setEditingEmployee] = useState<any | null>(null);
+  const [viewingEmployee, setViewingEmployee] = useState<any | null>(null);
+  const [employeeToDelete, setEmployeeToDelete] = useState<any | null>(null);
 
-  const fetchTables = async () => {
+  async function fetchEmployees() {
     try {
-      const apiUrl = `${window.location.origin}/api/tables`;
-
-      const res = await fetch(apiUrl, { cache: "no-store" });
+      const res = await fetch("/api/employee", { cache: "no-store" });
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        throw new Error("Failed to fetch employees");
       }
       const data = await res.json();
-      setTables(data);
+      setEmployees(data);
     } catch (err) {
-      console.error("Lỗi khi tải dữ liệu bàn:", err);
+      console.error(err);
+      toast.error("Failed to load employees.");
     }
-  };
+  }
 
   useEffect(() => {
-    fetchTables();
+    fetchEmployees();
   }, []);
 
-  const handleDelete = async (tableId, tableNumber) => {
-    if (
-      !window.confirm(`Bạn có chắc chắn muốn xóa Bàn số ${tableNumber} không?`)
-    ) {
-      return;
-    }
-
-    const originalTables = tables;
-    setTables(tables.filter((t) => t.id !== tableId));
-
+  const handleDelete = async (id: string) => {
     try {
-      const deleteUrl = `${window.location.origin}/api/tables/${tableId}`;
-
-      const res = await fetch(deleteUrl, {
+      const res = await fetch(`/api/employee/${id}`, {
         method: "DELETE",
       });
 
       if (!res.ok) {
-        setTables(originalTables);
-        throw new Error("Xóa không thành công.");
+        const errorData = await res.json();
+        throw new Error(errorData.message || "An unknown error occurred");
       }
 
-      console.log(`Bàn số ${tableNumber} đã bị xóa.`);
-    } catch (err) {
-      console.error("Lỗi khi xóa bàn:", err);
-      alert("Xóa thất bại. Vui lòng thử lại.");
-      setTables(originalTables);
+      setEmployees((prev) => prev.filter((emp) => emp.id !== id));
+      toast.success("Employee deleted successfully");
+    } catch (err: any) {
+      console.error("Error deleting employee:", err);
+      toast.error(err.message);
     }
   };
 
-  const handleEdit = (table) => {
-    setEditingTable(table);
+  const handleWatchDetails = (employee: any) => {
+    setViewingEmployee(employee);
+  };
+
+  const handleEdit = (employee: any) => {
+    setEditingEmployee(employee);
     setShowForm(true);
   };
 
-  const handleCreateNew = () => {
-    setEditingTable(null);
+  const handleAddNew = () => {
+    setEditingEmployee(null);
     setShowForm(true);
   };
 
-  const handleCancelForm = () => {
+  const handleFormSuccess = () => {
     setShowForm(false);
-    setEditingTable(null);
+    setEditingEmployee(null);
+    fetchEmployees();
   };
 
   return (
-    <main className="p-8 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
-          Quản lý Bàn Nhà Hàng ({tables.length})
-        </h1>
-        <Button onClick={handleCreateNew} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Thêm Bàn Mới
-        </Button>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Employee List</h1>
+        {!showForm && <Button onClick={handleAddNew}>Add New Employee</Button>}
       </div>
 
-      {/* Table List */}
-      <div className="border rounded-lg shadow-md p-4 bg-white mb-6">
-        <ul className="space-y-3">
-          {tables.length === 0 ? (
-            <li className="text-gray-500 italic">
-              Không có bàn nào đang hoạt động.
-            </li>
-          ) : (
-            tables.map((table) => (
-              <li
-                key={table.id}
-                className="flex justify-between items-center border-b pb-2 last:border-b-0"
-              >
-                <span className="font-medium text-lg">
-                  Bàn số:{" "}
-                  <span className="text-blue-600">{table.tableNumber}</span>{" "}
-                  (Sức chứa: {table.capacity} | Trạng thái: {table.status})
-                </span>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEdit(table)}
-                  >
-                    <Edit className="h-4 w-4 text-blue-500 hover:text-blue-700 transition-colors" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDelete(table.id, table.tableNumber)}
-                  >
-                    <X className="h-5 w-5 text-red-500 hover:text-red-700 transition-colors" />
-                  </Button>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-      </div>
-
-      {showForm && (
-        <div className="border rounded-lg shadow-md p-6 bg-white">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">
-              {editingTable
-                ? `Chỉnh sửa Bàn ${editingTable.tableNumber}`
-                : "Thêm Bàn Mới"}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={handleCancelForm}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <TableForm table={editingTable} />
+      {showForm ? (
+        <div className="mb-6">
+          <EmployeeForm
+            initialData={editingEmployee}
+            onSuccess={handleFormSuccess}
+          />
+          <Button
+            variant="outline"
+            className="mt-4 w-full"
+            onClick={() => setShowForm(false)}
+          >
+            Cancel
+          </Button>
         </div>
+      ) : (
+        <ul className="space-y-2">
+          {employees.map((emp) => (
+            <li
+              key={emp.id}
+              className="flex items-center justify-between border p-2 rounded"
+            >
+              <span>
+                {emp.employeeCode} - {emp.position || "N/A"}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleWatchDetails(emp)}
+                >
+                  <UserRoundSearch className="h-5 w-5 text-blue-500 hover:text-blue-700 transition-colors" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEdit(emp)}
+                >
+                  <Pencil className="h-5 w-5 text-yellow-500 hover:text-yellow-700 transition-colors" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEmployeeToDelete(emp)}
+                >
+                  <X className="h-5 w-5 text-red-500 hover:text-red-700 transition-colors" />
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
-    </main>
+
+      <EmployeeDetailsDialog
+        employee={viewingEmployee}
+        open={!!viewingEmployee}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setViewingEmployee(null);
+        }}
+      />
+
+      {employeeToDelete && (
+        <EmployeeDeleteDialog
+          employee={employeeToDelete}
+          open={!!employeeToDelete}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setEmployeeToDelete(null);
+          }}
+          onDeleteConfirm={handleDelete}
+        />
+      )}
+    </div>
   );
 }
