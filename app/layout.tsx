@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Nunito, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 
-import Navigation from "@/components/navigation";
 import { Toaster } from "@/components/ui/sonner";
 
 const nunitoSans = Nunito_Sans({
@@ -25,12 +24,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${nunitoSans.variable} ${nunito.variable} antialiased`}
-      >
+      <body className={`${nunitoSans.variable} ${nunito.variable} antialiased`}>
         {children}
         <Toaster richColors />
       </body>

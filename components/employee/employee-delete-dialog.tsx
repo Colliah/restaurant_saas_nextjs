@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EmployeeData } from "@/types/employee";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface EmployeeDeleteDialogProps {
@@ -44,16 +45,20 @@ export function EmployeeDeleteDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle className="flex items-center gap-2">
+            <Trash2 className="size-5 text-red-500" />
+            Are you absolutely sure?
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            employee profile for{" "}
+            This will permanently delete the employee{" "}
             <span className="font-semibold text-foreground">
-              {employee?.user?.name ||
-                employee?.employeeCode ||
-                "this employee"}
+              {employee?.user?.name}{" "}
             </span>
-            .
+            belongs to
+            <span className="font-semibold text-foreground">
+              {" "}
+              {employee?.organization?.name}
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -63,7 +68,7 @@ export function EmployeeDeleteDialog({
             disabled={isDeleting}
             className="bg-red-600 hover:bg-red-700"
           >
-            {isDeleting ? "Deleting..." : "Yes, delete employee"}
+            {isDeleting ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

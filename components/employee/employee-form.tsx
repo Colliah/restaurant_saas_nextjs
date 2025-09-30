@@ -19,31 +19,58 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { CalendarIcon, UserIcon, BuildingIcon, PhoneIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { SalaryType } from "@/types/employee";
-import { employeeFormSchema, EmployeeFormValues } from "@/schema/employee";
+import { SalaryType } from "../../types/employee";
+import { employeeFormSchema, EmployeeFormValues } from "../../schema/employee";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
-interface EmployeeFormProps {
-  initialData?: EmployeeFormValues;
+interface EmployeeSheetProps {
+  mode: "create" | "edit" | "view";
+  employeeId?: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
+
 interface SelectOption {
   id: string;
   name: string;
 }
-
-export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
+export function EmployeeSheet({
+  mode,
+  employeeId,
+  open,
+  onOpenChange,
+  onSuccess,
+}: EmployeeSheetProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isEditMode = !!initialData;
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [users, setUsers] = useState<SelectOption[]>([]);
   const [organizations, setOrganizations] = useState<SelectOption[]>([]);
+  const { data: activeOrganization } = authClient.useActiveOrganization();
+  console.log(activeOrganization);
+
+  const title =
+    mode === "view"
+      ? "Employee Details"
+      : mode === "edit"
+        ? "Edit Employee"
+        : "Create New Employee";
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
-    defaultValues: initialData || {
+    defaultValues: {
       userId: "",
       organizationId: "",
       employeeCode: "",
@@ -60,12 +87,12 @@ export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersRes = await fetch("/api/users");
-        const orgsRes = await fetch("/api/organization");
-
+        const [usersRes, orgsRes] = await Promise.all([
+          fetch("/api/users"),
+          fetch("/api/organization"),
+        ]);
         const usersData = await usersRes.json();
         const orgsData = await orgsRes.json();
-
         setUsers(usersData);
         setOrganizations(orgsData);
       } catch (error) {
@@ -73,18 +100,44 @@ export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
         toast.error("Could not load users or organizations.");
       }
     };
-
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      if ((mode === "edit" || mode === "view") && employeeId) {
+        setIsLoadingData(true);
+        try {
+          const res = await fetch(`/api/employee/${employeeId}`);
+          if (!res.ok) throw new Error("Failed to fetch employee details");
+          const data = await res.json();
+          form.reset({
+            ...data,
+            dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+          });
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to load employee details.");
+          onOpenChange(false);
+        } finally {
+          setIsLoadingData(false);
+        }
+      } else {
+        form.reset();
+      }
+    };
+
+    if (open) {
+      fetchEmployeeData();
+    }
+  }, [employeeId, mode, open, form, onOpenChange]);
 
   const onSubmit = async (values: EmployeeFormValues) => {
     setIsSubmitting(true);
     try {
-      const url = isEditMode
-        ? `/api/employee/${initialData.userId}`
-        : `/api/employee`;
-
-      const method = isEditMode ? "PATCH" : "POST";
+      const url =
+        mode === "edit" ? `/api/employee/${employeeId}` : `/api/employee`;
+      const method = mode === "edit" ? "PATCH" : "POST";
 
       const response = await fetch(url, {
         method: method,
@@ -100,33 +153,36 @@ export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
       }
 
       toast.success(
-        isEditMode
+        mode === "edit"
           ? "Updated employee successfully"
           : "Created new employee successfully"
       );
       onSuccess();
+      onOpenChange(false);
     } catch (error) {
-      toast.error(
-        `Failed to ${isEditMode ? "update" : "create"} employee:${error}`
-      );
+      toast.error(`Failed to ${mode} employee: ${error}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="container mx-auto border-2">
-      <CardHeader>
-        <CardTitle className="flex justify-center text-2xl font-bold">
-          {isEditMode ? "Edit Employee Profile" : "Create New Employee"}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="p-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="sm:max-w-3xl space-y-4 overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="text-2xl">{title}</SheetTitle>
+        </SheetHeader>
+        {isLoadingData ? (
+          <div className="flex justify-center items-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6 px-4"
+            >
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   control={form.control}
                   name="userId"
@@ -139,10 +195,10 @@ export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
-                        disabled={isEditMode}
+                        disabled={mode !== "create"}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full h-12 border-2 focus:border-primary">
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a user" />
                           </SelectTrigger>
                         </FormControl>
@@ -169,11 +225,11 @@ export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value}
-                        disabled={isEditMode}
+                        value={activeOrganization?.id}
+                        disabled={mode === "create" || mode === "view"}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full h-12 border-2 focus:border-primary">
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select an organization" />
                           </SelectTrigger>
                         </FormControl>
@@ -190,189 +246,201 @@ export function EmployeeForm({ initialData, onSuccess }: EmployeeFormProps) {
                   )}
                 />
               </div>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="employeeCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Employee Code <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="EMP001"
-                            className="h-12 border-2 focus:border-primary"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="position"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Position</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Staff"
-                            className="h-12 border-2 focus:border-primary"
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dateOfBirth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <CalendarIcon className="h-4 w-4" /> D.O.B
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            className="h-12 border-2 focus:border-primary"
-                            value={
-                              field.value instanceof Date
-                                ? field.value.toISOString().split("T")[0]
-                                : ""
-                            }
-                            onChange={(e) => {
-                              const dateValue = e.target.value;
-                              field.onChange(
-                                dateValue ? new Date(dateValue) : undefined
-                              );
-                            }}
-                            onBlur={field.onBlur}
-                            name={field.name}
-                            ref={field.ref}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <PhoneIcon className="h-4 w-4" /> Phone number
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="+84 0123456789"
-                            className="h-12 border-2 focus:border-primary"
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="employeeCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Employee Code <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="EMP001"
+                          {...field}
+                          disabled={mode === "view"}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Position</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Staff"
+                          {...field}
+                          value={field.value ?? ""}
+                          disabled={mode === "view"}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dateOfBirth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4" /> D.O.B
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          disabled={mode === "view"}
+                          value={
+                            field.value instanceof Date
+                              ? field.value.toISOString().split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value
+                                ? new Date(e.target.value)
+                                : undefined
+                            )
+                          }
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <PhoneIcon className="h-4 w-4" /> Phone number
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="+84 0123456789"
+                          {...field}
+                          value={field.value ?? ""}
+                          disabled={mode === "view"}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                <FormField
+                  control={form.control}
+                  name="salaryType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Salary Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value ?? ""}
+                          disabled={mode === "view"}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Choose salary type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={SalaryType.MONTHLY}>
+                              MONTHLY
+                            </SelectItem>
+                            <SelectItem value={SalaryType.HOURLY}>
+                              HOURLY
+                            </SelectItem>
+                            <SelectItem value={SalaryType.MIXED}>
+                              MIXED
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  {form.watch("salaryType") !== SalaryType.HOURLY && (
+                    <FormField
+                      control={form.control}
+                      name="baseSalary"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Base Salary</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="VD: 15000000"
+                              {...field}
+                              value={field.value ?? ""}
+                              disabled={mode === "view"}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  {form.watch("salaryType") !== SalaryType.MONTHLY && (
+                    <FormField
+                      control={form.control}
+                      name="hourlyRate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Hour Rate</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="VD: 50000"
+                              {...field}
+                              value={field.value ?? ""}
+                              disabled={mode === "view"}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="salaryType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Salary Type</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value ?? ""}
-                          >
-                            <SelectTrigger className="h-12 w-full border-2 focus:border-primary">
-                              <SelectValue placeholder="Choose salary type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={SalaryType.MONTHLY}>
-                                MONTHLY
-                              </SelectItem>
-                              <SelectItem value={SalaryType.HOURLY}>
-                                HOURLY
-                              </SelectItem>
-                              <SelectItem value={SalaryType.MIXED}>
-                                MIXED
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                    {form.watch("salaryType") !== SalaryType.HOURLY && (
-                      <FormField
-                        control={form.control}
-                        name="baseSalary"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Base Salary</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                placeholder="VD: 15000000"
-                                className="h-12 border-2 focus:border-primary"
-                                {...field}
-                                value={field.value ?? ""}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    )}
 
-                    {form.watch("salaryType") !== SalaryType.MONTHLY && (
-                      <FormField
-                        control={form.control}
-                        name="hourlyRate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Hour Rate</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                placeholder="VD: 50000"
-                                className="h-12 border-2 focus:border-primary"
-                                {...field}
-                                value={field.value ?? ""}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+              {mode !== "view" && (
+                <SheetFooter className="flex flex-row gap-4 px-0">
+                  <SheetClose asChild>
+                    <Button type="button" variant="outline" className="flex-1">
+                      Cancel
+                    </Button>
+                  </SheetClose>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : mode === "edit" ? (
+                      "Save Changes"
+                    ) : (
+                      "Create Employee"
                     )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex w-full justify-center">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="h-14 px-12 text-lg w-full"
-              >
-                {isSubmitting
-                  ? "Processing..."
-                  : isEditMode
-                    ? "Update Employee"
-                    : "Create Employee"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                  </Button>
+                </SheetFooter>
+              )}
+            </form>
+          </Form>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 }
