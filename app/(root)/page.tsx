@@ -1,147 +1,173 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { EmployeeSheet } from "@/components/employee/employee-form";
+import { EmployeeDeleteDialog } from "../../components/employee/employee-delete-dialog";
 import { Button } from "@/components/ui/button";
-import { X, Plus, Edit } from "lucide-react";
-import { TableForm } from "@/components/tables/table-form";
+import { Pencil, UserRoundSearch, Trash2, PlusCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export default function TableManager() {
-  const [tables, setTables] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingTable, setEditingTable] = useState(null);
-
-  const fetchTables = async () => {
-    try {
-      const apiUrl = `${window.location.origin}/api/tables`;
-
-      const res = await fetch(apiUrl, { cache: "no-store" });
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      const data = await res.json();
-      setTables(data);
-    } catch (err) {
-      console.error("Lỗi khi tải dữ liệu bàn:", err);
-    }
+interface Employee {
+  id: string;
+  employeeCode: string;
+  position: string;
+  dateOfBirth: string;
+  phoneNumber: string;
+  salaryType: "MONTHLY" | "HOURLY" | "YEARLY";
+  organizationId: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
   };
+  organization: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
+
+export default function EmployeeListPage() {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [sheetState, setSheetState] = useState<{
+    open: boolean;
+    mode: "create" | "edit" | "view";
+    employeeId?: string;
+  }>({
+    open: false,
+    mode: "create",
+  });
+
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(
+    null
+  );
+
+  async function fetchEmployees() {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/employee", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch employees");
+      const data = await res.json();
+      setEmployees(data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load employees.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    fetchTables();
+    fetchEmployees();
   }, []);
 
-  const handleDelete = async (tableId, tableNumber) => {
-    if (
-      !window.confirm(`Bạn có chắc chắn muốn xóa Bàn số ${tableNumber} không?`)
-    ) {
-      return;
-    }
-
-    const originalTables = tables;
-    setTables(tables.filter((t) => t.id !== tableId));
-
+  const handleDelete = async (id: string) => {
     try {
-      const deleteUrl = `${window.location.origin}/api/tables/${tableId}`;
-
-      const res = await fetch(deleteUrl, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`/api/employee/${id}`, { method: "DELETE" });
       if (!res.ok) {
-        setTables(originalTables);
-        throw new Error("Xóa không thành công.");
+        const errorData = await res.json();
+        throw new Error(errorData.message || "An unknown error occurred");
       }
-
-      console.log(`Bàn số ${tableNumber} đã bị xóa.`);
+      toast.success("Employee deleted successfully");
+      fetchEmployees();
     } catch (err) {
-      console.error("Lỗi khi xóa bàn:", err);
-      alert("Xóa thất bại. Vui lòng thử lại.");
-      setTables(originalTables);
+      toast.error("Employee deleted failed");
     }
   };
 
-  const handleEdit = (table) => {
-    setEditingTable(table);
-    setShowForm(true);
-  };
+  const handleWatchDetails = (employee: Employee) =>
+    setSheetState({ open: true, mode: "view", employeeId: employee.id });
+  const handleEdit = (employee: Employee) =>
+    setSheetState({ open: true, mode: "edit", employeeId: employee.id });
+  const handleAddNew = () => setSheetState({ open: true, mode: "create" });
 
-  const handleCreateNew = () => {
-    setEditingTable(null);
-    setShowForm(true);
-  };
-
-  const handleCancelForm = () => {
-    setShowForm(false);
-    setEditingTable(null);
+  const handleSheetSuccess = () => {
+    fetchEmployees();
+    setSheetState({ open: false, mode: "create" });
   };
 
   return (
-    <main className="p-8 max-w-4xl mx-auto">
+    <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
-          Quản lý Bàn Nhà Hàng ({tables.length})
-        </h1>
-        <Button onClick={handleCreateNew} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Thêm Bàn Mới
+        <h1 className="text-3xl font-bold">Employee Management</h1>
+        <Button onClick={handleAddNew}>
+          <PlusCircle className="mr-2 h-4 w-4" /> Add New Employee
         </Button>
       </div>
 
-      {/* Table List */}
-      <div className="border rounded-lg shadow-md p-4 bg-white mb-6">
-        <ul className="space-y-3">
-          {tables.length === 0 ? (
-            <li className="text-gray-500 italic">
-              Không có bàn nào đang hoạt động.
-            </li>
-          ) : (
-            tables.map((table) => (
+      <div className="bg-white border rounded-lg shadow-sm">
+        <ul className="divide-y">
+          {isLoading ? (
+            <li className="p-4 text-center">Loading...</li>
+          ) : employees.length > 0 ? (
+            employees.map((emp) => (
               <li
-                key={table.id}
-                className="flex justify-between items-center border-b pb-2 last:border-b-0"
+                key={emp.id}
+                className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
               >
-                <span className="font-medium text-lg">
-                  Bàn số:{" "}
-                  <span className="text-blue-600">{table.tableNumber}</span>{" "}
-                  (Sức chứa: {table.capacity} | Trạng thái: {table.status})
-                </span>
-
-                <div className="flex gap-2">
+                <div>
+                  <p className="font-semibold text-gray-800">
+                    {emp.user?.name || "N/A"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {emp.employeeCode} - {emp.position || "N/A"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleEdit(table)}
+                    onClick={() => handleWatchDetails(emp)}
+                    title="View Details"
                   >
-                    <Edit className="h-4 w-4 text-blue-500 hover:text-blue-700 transition-colors" />
+                    <UserRoundSearch className="h-5 w-5 text-blue-500" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(table.id, table.tableNumber)}
+                    onClick={() => handleEdit(emp)}
+                    title="Edit Employee"
                   >
-                    <X className="h-5 w-5 text-red-500 hover:text-red-700 transition-colors" />
+                    <Pencil className="h-5 w-5 text-yellow-500" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEmployeeToDelete(emp)}
+                    title="Delete Employee"
+                  >
+                    <Trash2 className="h-5 w-5 text-red-500" />
                   </Button>
                 </div>
               </li>
             ))
+          ) : (
+            <li className="p-4 text-center text-gray-500">
+              No employees found.
+            </li>
           )}
         </ul>
       </div>
 
-      {showForm && (
-        <div className="border rounded-lg shadow-md p-6 bg-white">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">
-              {editingTable
-                ? `Chỉnh sửa Bàn ${editingTable.tableNumber}`
-                : "Thêm Bàn Mới"}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={handleCancelForm}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <TableForm table={editingTable} />
-        </div>
+      <EmployeeSheet
+        open={sheetState.open}
+        onOpenChange={(open) => setSheetState({ ...sheetState, open })}
+        mode={sheetState.mode}
+        employeeId={sheetState.employeeId}
+        onSuccess={handleSheetSuccess}
+      />
+
+      {employeeToDelete && (
+        <EmployeeDeleteDialog
+          employee={employeeToDelete}
+          open={!!employeeToDelete}
+          onOpenChange={(isOpen) => !isOpen && setEmployeeToDelete(null)}
+          onDeleteConfirm={handleDelete}
+        />
       )}
-    </main>
+    </div>
   );
 }
