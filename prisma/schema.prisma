@@ -378,8 +378,8 @@ model Ingredient {
   name              String
   code              String?
   lowStockThreshold Float?                  @default(10)
-  imageId           String
-  image             Image                   @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  // imageId           String
+  // image             Image?                  @relation(fields: [imageId], references: [id], onDelete: Cascade)
   unit              IngredientUnit
   recipeItems       RecipeIngredient[]
   transactions      IngredientTransaction[]
@@ -708,7 +708,7 @@ model Image {
   id             String         @id @default(cuid())
   key            String
   ufsUrl         String
-  ingredients    Ingredient[]
+  // ingredients    Ingredient[]
   menuCategories MenuCategory[]
   menuItem       MenuItem?      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   createdAt      DateTime       @default(now())
