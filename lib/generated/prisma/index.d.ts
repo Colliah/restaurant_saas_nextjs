@@ -4695,12 +4695,10 @@ export namespace Prisma {
    */
 
   export type ImageCountOutputType = {
-    ingredients: number
     menuCategories: number
   }
 
   export type ImageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | ImageCountOutputTypeCountIngredientsArgs
     menuCategories?: boolean | ImageCountOutputTypeCountMenuCategoriesArgs
   }
 
@@ -4713,13 +4711,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the ImageCountOutputType
      */
     select?: ImageCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ImageCountOutputType without action
-   */
-  export type ImageCountOutputTypeCountIngredientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: IngredientWhereInput
   }
 
   /**
@@ -19558,7 +19549,6 @@ export namespace Prisma {
     name: string | null
     code: string | null
     lowStockThreshold: number | null
-    imageId: string | null
     unit: $Enums.IngredientUnit | null
     organizationId: string | null
   }
@@ -19569,7 +19559,6 @@ export namespace Prisma {
     name: string | null
     code: string | null
     lowStockThreshold: number | null
-    imageId: string | null
     unit: $Enums.IngredientUnit | null
     organizationId: string | null
   }
@@ -19580,7 +19569,6 @@ export namespace Prisma {
     name: number
     code: number
     lowStockThreshold: number
-    imageId: number
     unit: number
     organizationId: number
     _all: number
@@ -19601,7 +19589,6 @@ export namespace Prisma {
     name?: true
     code?: true
     lowStockThreshold?: true
-    imageId?: true
     unit?: true
     organizationId?: true
   }
@@ -19612,7 +19599,6 @@ export namespace Prisma {
     name?: true
     code?: true
     lowStockThreshold?: true
-    imageId?: true
     unit?: true
     organizationId?: true
   }
@@ -19623,7 +19609,6 @@ export namespace Prisma {
     name?: true
     code?: true
     lowStockThreshold?: true
-    imageId?: true
     unit?: true
     organizationId?: true
     _all?: true
@@ -19721,7 +19706,6 @@ export namespace Prisma {
     name: string
     code: string | null
     lowStockThreshold: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
     organizationId: string
     _count: IngredientCountAggregateOutputType | null
@@ -19751,10 +19735,8 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
-    imageId?: boolean
     unit?: boolean
     organizationId?: boolean
-    image?: boolean | ImageDefaultArgs<ExtArgs>
     recipeItems?: boolean | Ingredient$recipeItemsArgs<ExtArgs>
     transactions?: boolean | Ingredient$transactionsArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -19767,10 +19749,8 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
-    imageId?: boolean
     unit?: boolean
     organizationId?: boolean
-    image?: boolean | ImageDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ingredient"]>
 
@@ -19780,10 +19760,8 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
-    imageId?: boolean
     unit?: boolean
     organizationId?: boolean
-    image?: boolean | ImageDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["ingredient"]>
 
@@ -19793,32 +19771,27 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
-    imageId?: boolean
     unit?: boolean
     organizationId?: boolean
   }
 
-  export type IngredientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "code" | "lowStockThreshold" | "imageId" | "unit" | "organizationId", ExtArgs["result"]["ingredient"]>
+  export type IngredientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "code" | "lowStockThreshold" | "unit" | "organizationId", ExtArgs["result"]["ingredient"]>
   export type IngredientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    image?: boolean | ImageDefaultArgs<ExtArgs>
     recipeItems?: boolean | Ingredient$recipeItemsArgs<ExtArgs>
     transactions?: boolean | Ingredient$transactionsArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     _count?: boolean | IngredientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type IngredientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    image?: boolean | ImageDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }
   export type IngredientIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    image?: boolean | ImageDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }
 
   export type $IngredientPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Ingredient"
     objects: {
-      image: Prisma.$ImagePayload<ExtArgs>
       recipeItems: Prisma.$RecipeIngredientPayload<ExtArgs>[]
       transactions: Prisma.$IngredientTransactionPayload<ExtArgs>[]
       organization: Prisma.$OrganizationPayload<ExtArgs>
@@ -19829,7 +19802,6 @@ export namespace Prisma {
       name: string
       code: string | null
       lowStockThreshold: number | null
-      imageId: string
       unit: $Enums.IngredientUnit
       organizationId: string
     }, ExtArgs["result"]["ingredient"]>
@@ -20226,7 +20198,6 @@ export namespace Prisma {
    */
   export interface Prisma__IngredientClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    image<T extends ImageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ImageDefaultArgs<ExtArgs>>): Prisma__ImageClient<$Result.GetResult<Prisma.$ImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     recipeItems<T extends Ingredient$recipeItemsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredient$recipeItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecipeIngredientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     transactions<T extends Ingredient$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, Ingredient$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -20264,7 +20235,6 @@ export namespace Prisma {
     readonly name: FieldRef<"Ingredient", 'String'>
     readonly code: FieldRef<"Ingredient", 'String'>
     readonly lowStockThreshold: FieldRef<"Ingredient", 'Float'>
-    readonly imageId: FieldRef<"Ingredient", 'String'>
     readonly unit: FieldRef<"Ingredient", 'IngredientUnit'>
     readonly organizationId: FieldRef<"Ingredient", 'String'>
   }
@@ -39063,7 +39033,6 @@ export namespace Prisma {
     updatedAt?: boolean
     menuItemId?: boolean
     organizationId?: boolean
-    ingredients?: boolean | Image$ingredientsArgs<ExtArgs>
     menuCategories?: boolean | Image$menuCategoriesArgs<ExtArgs>
     menuItem?: boolean | Image$menuItemArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -39106,7 +39075,6 @@ export namespace Prisma {
 
   export type ImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "ufsUrl" | "createdAt" | "updatedAt" | "menuItemId" | "organizationId", ExtArgs["result"]["image"]>
   export type ImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ingredients?: boolean | Image$ingredientsArgs<ExtArgs>
     menuCategories?: boolean | Image$menuCategoriesArgs<ExtArgs>
     menuItem?: boolean | Image$menuItemArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -39124,7 +39092,6 @@ export namespace Prisma {
   export type $ImagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Image"
     objects: {
-      ingredients: Prisma.$IngredientPayload<ExtArgs>[]
       menuCategories: Prisma.$MenuCategoryPayload<ExtArgs>[]
       menuItem: Prisma.$MenuItemPayload<ExtArgs> | null
       organization: Prisma.$OrganizationPayload<ExtArgs>
@@ -39531,7 +39498,6 @@ export namespace Prisma {
    */
   export interface Prisma__ImageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    ingredients<T extends Image$ingredientsArgs<ExtArgs> = {}>(args?: Subset<T, Image$ingredientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IngredientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     menuCategories<T extends Image$menuCategoriesArgs<ExtArgs> = {}>(args?: Subset<T, Image$menuCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MenuCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     menuItem<T extends Image$menuItemArgs<ExtArgs> = {}>(args?: Subset<T, Image$menuItemArgs<ExtArgs>>): Prisma__MenuItemClient<$Result.GetResult<Prisma.$MenuItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -39964,30 +39930,6 @@ export namespace Prisma {
      * Limit how many Images to delete.
      */
     limit?: number
-  }
-
-  /**
-   * Image.ingredients
-   */
-  export type Image$ingredientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Ingredient
-     */
-    select?: IngredientSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Ingredient
-     */
-    omit?: IngredientOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: IngredientInclude<ExtArgs> | null
-    where?: IngredientWhereInput
-    orderBy?: IngredientOrderByWithRelationInput | IngredientOrderByWithRelationInput[]
-    cursor?: IngredientWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: IngredientScalarFieldEnum | IngredientScalarFieldEnum[]
   }
 
   /**
@@ -43737,7 +43679,6 @@ export namespace Prisma {
     name: 'name',
     code: 'code',
     lowStockThreshold: 'lowStockThreshold',
-    imageId: 'imageId',
     unit: 'unit',
     organizationId: 'organizationId'
   };
@@ -45540,10 +45481,8 @@ export namespace Prisma {
     name?: StringFilter<"Ingredient"> | string
     code?: StringNullableFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableFilter<"Ingredient"> | number | null
-    imageId?: StringFilter<"Ingredient"> | string
     unit?: EnumIngredientUnitFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringFilter<"Ingredient"> | string
-    image?: XOR<ImageScalarRelationFilter, ImageWhereInput>
     recipeItems?: RecipeIngredientListRelationFilter
     transactions?: IngredientTransactionListRelationFilter
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -45555,10 +45494,8 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     lowStockThreshold?: SortOrderInput | SortOrder
-    imageId?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
-    image?: ImageOrderByWithRelationInput
     recipeItems?: RecipeIngredientOrderByRelationAggregateInput
     transactions?: IngredientTransactionOrderByRelationAggregateInput
     organization?: OrganizationOrderByWithRelationInput
@@ -45574,10 +45511,8 @@ export namespace Prisma {
     name?: StringFilter<"Ingredient"> | string
     code?: StringNullableFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableFilter<"Ingredient"> | number | null
-    imageId?: StringFilter<"Ingredient"> | string
     unit?: EnumIngredientUnitFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringFilter<"Ingredient"> | string
-    image?: XOR<ImageScalarRelationFilter, ImageWhereInput>
     recipeItems?: RecipeIngredientListRelationFilter
     transactions?: IngredientTransactionListRelationFilter
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -45589,7 +45524,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     lowStockThreshold?: SortOrderInput | SortOrder
-    imageId?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
     _count?: IngredientCountOrderByAggregateInput
@@ -45608,7 +45542,6 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Ingredient"> | string
     code?: StringNullableWithAggregatesFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableWithAggregatesFilter<"Ingredient"> | number | null
-    imageId?: StringWithAggregatesFilter<"Ingredient"> | string
     unit?: EnumIngredientUnitWithAggregatesFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringWithAggregatesFilter<"Ingredient"> | string
   }
@@ -47002,7 +46935,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Image"> | Date | string
     menuItemId?: StringNullableFilter<"Image"> | string | null
     organizationId?: StringFilter<"Image"> | string
-    ingredients?: IngredientListRelationFilter
     menuCategories?: MenuCategoryListRelationFilter
     menuItem?: XOR<MenuItemNullableScalarRelationFilter, MenuItemWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -47016,7 +46948,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
     menuItemId?: SortOrderInput | SortOrder
     organizationId?: SortOrder
-    ingredients?: IngredientOrderByRelationAggregateInput
     menuCategories?: MenuCategoryOrderByRelationAggregateInput
     menuItem?: MenuItemOrderByWithRelationInput
     organization?: OrganizationOrderByWithRelationInput
@@ -47033,7 +46964,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Image"> | Date | string
     menuItemId?: StringNullableFilter<"Image"> | string | null
     organizationId?: StringFilter<"Image"> | string
-    ingredients?: IngredientListRelationFilter
     menuCategories?: MenuCategoryListRelationFilter
     menuItem?: XOR<MenuItemNullableScalarRelationFilter, MenuItemWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -48565,7 +48495,6 @@ export namespace Prisma {
     code?: string | null
     lowStockThreshold?: number | null
     unit: $Enums.IngredientUnit
-    image: ImageCreateNestedOneWithoutIngredientsInput
     recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
     transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
     organization: OrganizationCreateNestedOneWithoutIngredientsInput
@@ -48577,7 +48506,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
     organizationId: string
     recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
@@ -48591,7 +48519,6 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    image?: ImageUpdateOneRequiredWithoutIngredientsNestedInput
     recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
     transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutIngredientsNestedInput
@@ -48603,7 +48530,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    imageId?: StringFieldUpdateOperationsInput | string
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
     recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
@@ -48616,7 +48542,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
     organizationId: string
   }
@@ -48636,7 +48561,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    imageId?: StringFieldUpdateOperationsInput | string
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
   }
@@ -50111,7 +50035,6 @@ export namespace Prisma {
     ufsUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    ingredients?: IngredientCreateNestedManyWithoutImageInput
     menuCategories?: MenuCategoryCreateNestedManyWithoutImageInput
     menuItem?: MenuItemCreateNestedOneWithoutImagesInput
     organization: OrganizationCreateNestedOneWithoutImagesInput
@@ -50125,7 +50048,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     menuItemId?: string | null
     organizationId: string
-    ingredients?: IngredientUncheckedCreateNestedManyWithoutImageInput
     menuCategories?: MenuCategoryUncheckedCreateNestedManyWithoutImageInput
   }
 
@@ -50135,7 +50057,6 @@ export namespace Prisma {
     ufsUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    ingredients?: IngredientUpdateManyWithoutImageNestedInput
     menuCategories?: MenuCategoryUpdateManyWithoutImageNestedInput
     menuItem?: MenuItemUpdateOneWithoutImagesNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutImagesNestedInput
@@ -50149,7 +50070,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     menuItemId?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: StringFieldUpdateOperationsInput | string
-    ingredients?: IngredientUncheckedUpdateManyWithoutImageNestedInput
     menuCategories?: MenuCategoryUncheckedUpdateManyWithoutImageNestedInput
   }
 
@@ -51584,11 +51504,6 @@ export namespace Prisma {
     not?: NestedEnumIngredientUnitFilter<$PrismaModel> | $Enums.IngredientUnit
   }
 
-  export type ImageScalarRelationFilter = {
-    is?: ImageWhereInput
-    isNot?: ImageWhereInput
-  }
-
   export type RecipeIngredientListRelationFilter = {
     every?: RecipeIngredientWhereInput
     some?: RecipeIngredientWhereInput
@@ -51610,7 +51525,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     lowStockThreshold?: SortOrder
-    imageId?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
   }
@@ -51625,7 +51539,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     lowStockThreshold?: SortOrder
-    imageId?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
   }
@@ -51636,7 +51549,6 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     lowStockThreshold?: SortOrder
-    imageId?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
   }
@@ -54857,12 +54769,6 @@ export namespace Prisma {
     update?: XOR<XOR<EmployeeProfileUpdateToOneWithWhereWithoutPayrollsInput, EmployeeProfileUpdateWithoutPayrollsInput>, EmployeeProfileUncheckedUpdateWithoutPayrollsInput>
   }
 
-  export type ImageCreateNestedOneWithoutIngredientsInput = {
-    create?: XOR<ImageCreateWithoutIngredientsInput, ImageUncheckedCreateWithoutIngredientsInput>
-    connectOrCreate?: ImageCreateOrConnectWithoutIngredientsInput
-    connect?: ImageWhereUniqueInput
-  }
-
   export type RecipeIngredientCreateNestedManyWithoutIngredientInput = {
     create?: XOR<RecipeIngredientCreateWithoutIngredientInput, RecipeIngredientUncheckedCreateWithoutIngredientInput> | RecipeIngredientCreateWithoutIngredientInput[] | RecipeIngredientUncheckedCreateWithoutIngredientInput[]
     connectOrCreate?: RecipeIngredientCreateOrConnectWithoutIngredientInput | RecipeIngredientCreateOrConnectWithoutIngredientInput[]
@@ -54899,14 +54805,6 @@ export namespace Prisma {
 
   export type EnumIngredientUnitFieldUpdateOperationsInput = {
     set?: $Enums.IngredientUnit
-  }
-
-  export type ImageUpdateOneRequiredWithoutIngredientsNestedInput = {
-    create?: XOR<ImageCreateWithoutIngredientsInput, ImageUncheckedCreateWithoutIngredientsInput>
-    connectOrCreate?: ImageCreateOrConnectWithoutIngredientsInput
-    upsert?: ImageUpsertWithoutIngredientsInput
-    connect?: ImageWhereUniqueInput
-    update?: XOR<XOR<ImageUpdateToOneWithWhereWithoutIngredientsInput, ImageUpdateWithoutIngredientsInput>, ImageUncheckedUpdateWithoutIngredientsInput>
   }
 
   export type RecipeIngredientUpdateManyWithoutIngredientNestedInput = {
@@ -56179,13 +56077,6 @@ export namespace Prisma {
     deleteMany?: CustomerProfileScalarWhereInput | CustomerProfileScalarWhereInput[]
   }
 
-  export type IngredientCreateNestedManyWithoutImageInput = {
-    create?: XOR<IngredientCreateWithoutImageInput, IngredientUncheckedCreateWithoutImageInput> | IngredientCreateWithoutImageInput[] | IngredientUncheckedCreateWithoutImageInput[]
-    connectOrCreate?: IngredientCreateOrConnectWithoutImageInput | IngredientCreateOrConnectWithoutImageInput[]
-    createMany?: IngredientCreateManyImageInputEnvelope
-    connect?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-  }
-
   export type MenuCategoryCreateNestedManyWithoutImageInput = {
     create?: XOR<MenuCategoryCreateWithoutImageInput, MenuCategoryUncheckedCreateWithoutImageInput> | MenuCategoryCreateWithoutImageInput[] | MenuCategoryUncheckedCreateWithoutImageInput[]
     connectOrCreate?: MenuCategoryCreateOrConnectWithoutImageInput | MenuCategoryCreateOrConnectWithoutImageInput[]
@@ -56205,32 +56096,11 @@ export namespace Prisma {
     connect?: OrganizationWhereUniqueInput
   }
 
-  export type IngredientUncheckedCreateNestedManyWithoutImageInput = {
-    create?: XOR<IngredientCreateWithoutImageInput, IngredientUncheckedCreateWithoutImageInput> | IngredientCreateWithoutImageInput[] | IngredientUncheckedCreateWithoutImageInput[]
-    connectOrCreate?: IngredientCreateOrConnectWithoutImageInput | IngredientCreateOrConnectWithoutImageInput[]
-    createMany?: IngredientCreateManyImageInputEnvelope
-    connect?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-  }
-
   export type MenuCategoryUncheckedCreateNestedManyWithoutImageInput = {
     create?: XOR<MenuCategoryCreateWithoutImageInput, MenuCategoryUncheckedCreateWithoutImageInput> | MenuCategoryCreateWithoutImageInput[] | MenuCategoryUncheckedCreateWithoutImageInput[]
     connectOrCreate?: MenuCategoryCreateOrConnectWithoutImageInput | MenuCategoryCreateOrConnectWithoutImageInput[]
     createMany?: MenuCategoryCreateManyImageInputEnvelope
     connect?: MenuCategoryWhereUniqueInput | MenuCategoryWhereUniqueInput[]
-  }
-
-  export type IngredientUpdateManyWithoutImageNestedInput = {
-    create?: XOR<IngredientCreateWithoutImageInput, IngredientUncheckedCreateWithoutImageInput> | IngredientCreateWithoutImageInput[] | IngredientUncheckedCreateWithoutImageInput[]
-    connectOrCreate?: IngredientCreateOrConnectWithoutImageInput | IngredientCreateOrConnectWithoutImageInput[]
-    upsert?: IngredientUpsertWithWhereUniqueWithoutImageInput | IngredientUpsertWithWhereUniqueWithoutImageInput[]
-    createMany?: IngredientCreateManyImageInputEnvelope
-    set?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    disconnect?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    delete?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    connect?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    update?: IngredientUpdateWithWhereUniqueWithoutImageInput | IngredientUpdateWithWhereUniqueWithoutImageInput[]
-    updateMany?: IngredientUpdateManyWithWhereWithoutImageInput | IngredientUpdateManyWithWhereWithoutImageInput[]
-    deleteMany?: IngredientScalarWhereInput | IngredientScalarWhereInput[]
   }
 
   export type MenuCategoryUpdateManyWithoutImageNestedInput = {
@@ -56263,20 +56133,6 @@ export namespace Prisma {
     upsert?: OrganizationUpsertWithoutImagesInput
     connect?: OrganizationWhereUniqueInput
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutImagesInput, OrganizationUpdateWithoutImagesInput>, OrganizationUncheckedUpdateWithoutImagesInput>
-  }
-
-  export type IngredientUncheckedUpdateManyWithoutImageNestedInput = {
-    create?: XOR<IngredientCreateWithoutImageInput, IngredientUncheckedCreateWithoutImageInput> | IngredientCreateWithoutImageInput[] | IngredientUncheckedCreateWithoutImageInput[]
-    connectOrCreate?: IngredientCreateOrConnectWithoutImageInput | IngredientCreateOrConnectWithoutImageInput[]
-    upsert?: IngredientUpsertWithWhereUniqueWithoutImageInput | IngredientUpsertWithWhereUniqueWithoutImageInput[]
-    createMany?: IngredientCreateManyImageInputEnvelope
-    set?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    disconnect?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    delete?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    connect?: IngredientWhereUniqueInput | IngredientWhereUniqueInput[]
-    update?: IngredientUpdateWithWhereUniqueWithoutImageInput | IngredientUpdateWithWhereUniqueWithoutImageInput[]
-    updateMany?: IngredientUpdateManyWithWhereWithoutImageInput | IngredientUpdateManyWithWhereWithoutImageInput[]
-    deleteMany?: IngredientScalarWhereInput | IngredientScalarWhereInput[]
   }
 
   export type MenuCategoryUncheckedUpdateManyWithoutImageNestedInput = {
@@ -58085,7 +57941,6 @@ export namespace Prisma {
     code?: string | null
     lowStockThreshold?: number | null
     unit: $Enums.IngredientUnit
-    image: ImageCreateNestedOneWithoutIngredientsInput
     recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
     transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
   }
@@ -58096,7 +57951,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
     transactions?: IngredientTransactionUncheckedCreateNestedManyWithoutIngredientInput
@@ -58654,7 +58508,6 @@ export namespace Prisma {
     ufsUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    ingredients?: IngredientCreateNestedManyWithoutImageInput
     menuCategories?: MenuCategoryCreateNestedManyWithoutImageInput
     menuItem?: MenuItemCreateNestedOneWithoutImagesInput
   }
@@ -58666,7 +58519,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     menuItemId?: string | null
-    ingredients?: IngredientUncheckedCreateNestedManyWithoutImageInput
     menuCategories?: MenuCategoryUncheckedCreateNestedManyWithoutImageInput
   }
 
@@ -58819,7 +58671,6 @@ export namespace Prisma {
     name?: StringFilter<"Ingredient"> | string
     code?: StringNullableFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableFilter<"Ingredient"> | number | null
-    imageId?: StringFilter<"Ingredient"> | string
     unit?: EnumIngredientUnitFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringFilter<"Ingredient"> | string
   }
@@ -61156,33 +61007,6 @@ export namespace Prisma {
     leaveRequests?: LeaveRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
-  export type ImageCreateWithoutIngredientsInput = {
-    id?: string
-    key: string
-    ufsUrl: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    menuCategories?: MenuCategoryCreateNestedManyWithoutImageInput
-    menuItem?: MenuItemCreateNestedOneWithoutImagesInput
-    organization: OrganizationCreateNestedOneWithoutImagesInput
-  }
-
-  export type ImageUncheckedCreateWithoutIngredientsInput = {
-    id?: string
-    key: string
-    ufsUrl: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    menuItemId?: string | null
-    organizationId: string
-    menuCategories?: MenuCategoryUncheckedCreateNestedManyWithoutImageInput
-  }
-
-  export type ImageCreateOrConnectWithoutIngredientsInput = {
-    where: ImageWhereUniqueInput
-    create: XOR<ImageCreateWithoutIngredientsInput, ImageUncheckedCreateWithoutIngredientsInput>
-  }
-
   export type RecipeIngredientCreateWithoutIngredientInput = {
     quantity: number
     createdAt?: Date | string
@@ -61302,39 +61126,6 @@ export namespace Prisma {
   export type OrganizationCreateOrConnectWithoutIngredientsInput = {
     where: OrganizationWhereUniqueInput
     create: XOR<OrganizationCreateWithoutIngredientsInput, OrganizationUncheckedCreateWithoutIngredientsInput>
-  }
-
-  export type ImageUpsertWithoutIngredientsInput = {
-    update: XOR<ImageUpdateWithoutIngredientsInput, ImageUncheckedUpdateWithoutIngredientsInput>
-    create: XOR<ImageCreateWithoutIngredientsInput, ImageUncheckedCreateWithoutIngredientsInput>
-    where?: ImageWhereInput
-  }
-
-  export type ImageUpdateToOneWithWhereWithoutIngredientsInput = {
-    where?: ImageWhereInput
-    data: XOR<ImageUpdateWithoutIngredientsInput, ImageUncheckedUpdateWithoutIngredientsInput>
-  }
-
-  export type ImageUpdateWithoutIngredientsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    ufsUrl?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    menuCategories?: MenuCategoryUpdateManyWithoutImageNestedInput
-    menuItem?: MenuItemUpdateOneWithoutImagesNestedInput
-    organization?: OrganizationUpdateOneRequiredWithoutImagesNestedInput
-  }
-
-  export type ImageUncheckedUpdateWithoutIngredientsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    ufsUrl?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    menuItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    organizationId?: StringFieldUpdateOperationsInput | string
-    menuCategories?: MenuCategoryUncheckedUpdateManyWithoutImageNestedInput
   }
 
   export type RecipeIngredientUpsertWithWhereUniqueWithoutIngredientInput = {
@@ -61457,7 +61248,6 @@ export namespace Prisma {
     code?: string | null
     lowStockThreshold?: number | null
     unit: $Enums.IngredientUnit
-    image: ImageCreateNestedOneWithoutIngredientsInput
     recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
     organization: OrganizationCreateNestedOneWithoutIngredientsInput
   }
@@ -61468,7 +61258,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
     organizationId: string
     recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
@@ -61617,7 +61406,6 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    image?: ImageUpdateOneRequiredWithoutIngredientsNestedInput
     recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutIngredientsNestedInput
   }
@@ -61628,7 +61416,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    imageId?: StringFieldUpdateOperationsInput | string
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
     recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
@@ -61808,7 +61595,6 @@ export namespace Prisma {
     code?: string | null
     lowStockThreshold?: number | null
     unit: $Enums.IngredientUnit
-    image: ImageCreateNestedOneWithoutIngredientsInput
     transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
     organization: OrganizationCreateNestedOneWithoutIngredientsInput
   }
@@ -61819,7 +61605,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
     organizationId: string
     transactions?: IngredientTransactionUncheckedCreateNestedManyWithoutIngredientInput
@@ -61889,7 +61674,6 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    image?: ImageUpdateOneRequiredWithoutIngredientsNestedInput
     transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutIngredientsNestedInput
   }
@@ -61900,7 +61684,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    imageId?: StringFieldUpdateOperationsInput | string
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
     transactions?: IngredientTransactionUncheckedUpdateManyWithoutIngredientNestedInput
@@ -62186,7 +61969,6 @@ export namespace Prisma {
     ufsUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    ingredients?: IngredientCreateNestedManyWithoutImageInput
     menuItem?: MenuItemCreateNestedOneWithoutImagesInput
     organization: OrganizationCreateNestedOneWithoutImagesInput
   }
@@ -62199,7 +61981,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     menuItemId?: string | null
     organizationId: string
-    ingredients?: IngredientUncheckedCreateNestedManyWithoutImageInput
   }
 
   export type ImageCreateOrConnectWithoutMenuCategoriesInput = {
@@ -62339,7 +62120,6 @@ export namespace Prisma {
     ufsUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    ingredients?: IngredientUpdateManyWithoutImageNestedInput
     menuItem?: MenuItemUpdateOneWithoutImagesNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutImagesNestedInput
   }
@@ -62352,7 +62132,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     menuItemId?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: StringFieldUpdateOperationsInput | string
-    ingredients?: IngredientUncheckedUpdateManyWithoutImageNestedInput
   }
 
   export type MenuItemUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -62446,7 +62225,6 @@ export namespace Prisma {
     ufsUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    ingredients?: IngredientCreateNestedManyWithoutImageInput
     menuCategories?: MenuCategoryCreateNestedManyWithoutImageInput
     organization: OrganizationCreateNestedOneWithoutImagesInput
   }
@@ -62458,7 +62236,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
-    ingredients?: IngredientUncheckedCreateNestedManyWithoutImageInput
     menuCategories?: MenuCategoryUncheckedCreateNestedManyWithoutImageInput
   }
 
@@ -65835,40 +65612,6 @@ export namespace Prisma {
     data: XOR<CustomerProfileUpdateManyMutationInput, CustomerProfileUncheckedUpdateManyWithoutAddressInput>
   }
 
-  export type IngredientCreateWithoutImageInput = {
-    id?: string
-    slug: string
-    name: string
-    code?: string | null
-    lowStockThreshold?: number | null
-    unit: $Enums.IngredientUnit
-    recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
-    transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
-    organization: OrganizationCreateNestedOneWithoutIngredientsInput
-  }
-
-  export type IngredientUncheckedCreateWithoutImageInput = {
-    id?: string
-    slug: string
-    name: string
-    code?: string | null
-    lowStockThreshold?: number | null
-    unit: $Enums.IngredientUnit
-    organizationId: string
-    recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
-    transactions?: IngredientTransactionUncheckedCreateNestedManyWithoutIngredientInput
-  }
-
-  export type IngredientCreateOrConnectWithoutImageInput = {
-    where: IngredientWhereUniqueInput
-    create: XOR<IngredientCreateWithoutImageInput, IngredientUncheckedCreateWithoutImageInput>
-  }
-
-  export type IngredientCreateManyImageInputEnvelope = {
-    data: IngredientCreateManyImageInput | IngredientCreateManyImageInput[]
-    skipDuplicates?: boolean
-  }
-
   export type MenuCategoryCreateWithoutImageInput = {
     id?: string
     name: string
@@ -66017,22 +65760,6 @@ export namespace Prisma {
   export type OrganizationCreateOrConnectWithoutImagesInput = {
     where: OrganizationWhereUniqueInput
     create: XOR<OrganizationCreateWithoutImagesInput, OrganizationUncheckedCreateWithoutImagesInput>
-  }
-
-  export type IngredientUpsertWithWhereUniqueWithoutImageInput = {
-    where: IngredientWhereUniqueInput
-    update: XOR<IngredientUpdateWithoutImageInput, IngredientUncheckedUpdateWithoutImageInput>
-    create: XOR<IngredientCreateWithoutImageInput, IngredientUncheckedCreateWithoutImageInput>
-  }
-
-  export type IngredientUpdateWithWhereUniqueWithoutImageInput = {
-    where: IngredientWhereUniqueInput
-    data: XOR<IngredientUpdateWithoutImageInput, IngredientUncheckedUpdateWithoutImageInput>
-  }
-
-  export type IngredientUpdateManyWithWhereWithoutImageInput = {
-    where: IngredientScalarWhereInput
-    data: XOR<IngredientUpdateManyMutationInput, IngredientUncheckedUpdateManyWithoutImageInput>
   }
 
   export type MenuCategoryUpsertWithWhereUniqueWithoutImageInput = {
@@ -67196,7 +66923,6 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
-    imageId: string
     unit: $Enums.IngredientUnit
   }
 
@@ -67569,7 +67295,6 @@ export namespace Prisma {
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    image?: ImageUpdateOneRequiredWithoutIngredientsNestedInput
     recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
     transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
   }
@@ -67580,7 +67305,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    imageId?: StringFieldUpdateOperationsInput | string
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
     transactions?: IngredientTransactionUncheckedUpdateManyWithoutIngredientNestedInput
@@ -67592,7 +67316,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    imageId?: StringFieldUpdateOperationsInput | string
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
   }
 
@@ -68181,7 +67904,6 @@ export namespace Prisma {
     ufsUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    ingredients?: IngredientUpdateManyWithoutImageNestedInput
     menuCategories?: MenuCategoryUpdateManyWithoutImageNestedInput
     menuItem?: MenuItemUpdateOneWithoutImagesNestedInput
   }
@@ -68193,7 +67915,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     menuItemId?: NullableStringFieldUpdateOperationsInput | string | null
-    ingredients?: IngredientUncheckedUpdateManyWithoutImageNestedInput
     menuCategories?: MenuCategoryUncheckedUpdateManyWithoutImageNestedInput
   }
 
@@ -68685,7 +68406,6 @@ export namespace Prisma {
     ufsUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    ingredients?: IngredientUpdateManyWithoutImageNestedInput
     menuCategories?: MenuCategoryUpdateManyWithoutImageNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutImagesNestedInput
   }
@@ -68697,7 +68417,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
-    ingredients?: IngredientUncheckedUpdateManyWithoutImageNestedInput
     menuCategories?: MenuCategoryUncheckedUpdateManyWithoutImageNestedInput
   }
 
@@ -69366,16 +69085,6 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type IngredientCreateManyImageInput = {
-    id?: string
-    slug: string
-    name: string
-    code?: string | null
-    lowStockThreshold?: number | null
-    unit: $Enums.IngredientUnit
-    organizationId: string
-  }
-
   export type MenuCategoryCreateManyImageInput = {
     id?: string
     name: string
@@ -69388,40 +69097,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     deletedAt?: Date | string | null
     organizationId: string
-  }
-
-  export type IngredientUpdateWithoutImageInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
-    lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
-    transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
-    organization?: OrganizationUpdateOneRequiredWithoutIngredientsNestedInput
-  }
-
-  export type IngredientUncheckedUpdateWithoutImageInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
-    lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    organizationId?: StringFieldUpdateOperationsInput | string
-    recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
-    transactions?: IngredientTransactionUncheckedUpdateManyWithoutIngredientNestedInput
-  }
-
-  export type IngredientUncheckedUpdateManyWithoutImageInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
-    lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
-    unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
-    organizationId?: StringFieldUpdateOperationsInput | string
   }
 
   export type MenuCategoryUpdateWithoutImageInput = {

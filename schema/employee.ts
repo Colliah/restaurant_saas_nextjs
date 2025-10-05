@@ -2,9 +2,9 @@ import { SalaryType } from "@/types/employee";
 import z from "zod";
 
 export const employeeFormSchema = z.object({
-  userId: z.string().min(1, "Bắt buộc"),
-  organizationId: z.string().min(1, "Bắt buộc"),
-  employeeCode: z.string().min(1, "Bắt buộc"),
+  userId: z.string().min(1, "User Id is required"),
+  organizationId: z.string().min(1, "Organization Id is required"),
+  employeeCode: z.string().min(1, "Employee code is required"),
   position: z.string().optional(),
   dateOfBirth: z.date().optional(),
   phoneNumber: z.string().optional(),

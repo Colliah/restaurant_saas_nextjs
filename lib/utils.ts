@@ -32,9 +32,18 @@ export function formatDateFull(date?: string | Date | null): string {
 export function formatMoney(amount?: number | null): string {
   if (amount == null || isNaN(amount)) return "N/A";
 
-  return amount.toLocaleString("vi-VN", {
+  return amount.toLocaleString("en-US", {
     style: "currency",
-    currency: "VND",
-    minimumFractionDigits: 0,
+    currency: "USD",
   });
 }
+
+export const slugify = (text: string): string => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
+};
