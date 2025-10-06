@@ -8,7 +8,7 @@ interface Props {
 export default function RootLayout({ children }: Props) {
   return (
     <div>
-      <Navigation />
+      {/* <Navigation /> */}
       {children}
       <Toaster richColors />
     </div>

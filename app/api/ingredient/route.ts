@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
       );
     }
     const data = await req.json();
-    const { slug, name, code, unit, imageId, lowStockThreshold } = data;
+    const { slug, name, code, unit, imageId, currentStock, lowStockThreshold } =
+      data;
 
     if (!slug || !name || !unit) {
       return NextResponse.json(
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
       name,
       code,
       unit,
+      currentStock,
       lowStockThreshold: lowStockThreshold || 10,
       organization: {
         connect: {

@@ -6,6 +6,7 @@ export const ingredientSchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   code: z.string().optional(),
   unit: z.nativeEnum(IngredientUnit),
+  currentStock: z.coerce.number<number>(),
   lowStockThreshold: z.coerce.number<number>(),
 });
 

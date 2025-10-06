@@ -58,6 +58,7 @@ export function IngredientSheetForm({
     name: "",
     slug: "",
     code: "",
+    currentStock: 0,
     unit: IngredientUnit.GRAM,
     lowStockThreshold: 10,
   };
@@ -214,6 +215,23 @@ export function IngredientSheetForm({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currentStock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stock</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      disabled={isEditMode || isViewMode}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
