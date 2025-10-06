@@ -59,7 +59,6 @@ export function EmployeeSheet({
   const [users, setUsers] = useState<SelectOption[]>([]);
   const [organizations, setOrganizations] = useState<SelectOption[]>([]);
   const { data: activeOrganization } = authClient.useActiveOrganization();
-  console.log(activeOrganization);
 
   const title =
     mode === "view"

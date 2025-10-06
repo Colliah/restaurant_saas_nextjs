@@ -380,6 +380,7 @@ model Ingredient {
   lowStockThreshold Float?                  @default(10)
   // imageId           String
   // image             Image?                  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  currentStock      Float                   @default(0)
   unit              IngredientUnit
   recipeItems       RecipeIngredient[]
   transactions      IngredientTransaction[]

@@ -19537,10 +19537,12 @@ export namespace Prisma {
 
   export type IngredientAvgAggregateOutputType = {
     lowStockThreshold: number | null
+    currentStock: number | null
   }
 
   export type IngredientSumAggregateOutputType = {
     lowStockThreshold: number | null
+    currentStock: number | null
   }
 
   export type IngredientMinAggregateOutputType = {
@@ -19549,6 +19551,7 @@ export namespace Prisma {
     name: string | null
     code: string | null
     lowStockThreshold: number | null
+    currentStock: number | null
     unit: $Enums.IngredientUnit | null
     organizationId: string | null
   }
@@ -19559,6 +19562,7 @@ export namespace Prisma {
     name: string | null
     code: string | null
     lowStockThreshold: number | null
+    currentStock: number | null
     unit: $Enums.IngredientUnit | null
     organizationId: string | null
   }
@@ -19569,6 +19573,7 @@ export namespace Prisma {
     name: number
     code: number
     lowStockThreshold: number
+    currentStock: number
     unit: number
     organizationId: number
     _all: number
@@ -19577,10 +19582,12 @@ export namespace Prisma {
 
   export type IngredientAvgAggregateInputType = {
     lowStockThreshold?: true
+    currentStock?: true
   }
 
   export type IngredientSumAggregateInputType = {
     lowStockThreshold?: true
+    currentStock?: true
   }
 
   export type IngredientMinAggregateInputType = {
@@ -19589,6 +19596,7 @@ export namespace Prisma {
     name?: true
     code?: true
     lowStockThreshold?: true
+    currentStock?: true
     unit?: true
     organizationId?: true
   }
@@ -19599,6 +19607,7 @@ export namespace Prisma {
     name?: true
     code?: true
     lowStockThreshold?: true
+    currentStock?: true
     unit?: true
     organizationId?: true
   }
@@ -19609,6 +19618,7 @@ export namespace Prisma {
     name?: true
     code?: true
     lowStockThreshold?: true
+    currentStock?: true
     unit?: true
     organizationId?: true
     _all?: true
@@ -19706,6 +19716,7 @@ export namespace Prisma {
     name: string
     code: string | null
     lowStockThreshold: number | null
+    currentStock: number
     unit: $Enums.IngredientUnit
     organizationId: string
     _count: IngredientCountAggregateOutputType | null
@@ -19735,6 +19746,7 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
+    currentStock?: boolean
     unit?: boolean
     organizationId?: boolean
     recipeItems?: boolean | Ingredient$recipeItemsArgs<ExtArgs>
@@ -19749,6 +19761,7 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
+    currentStock?: boolean
     unit?: boolean
     organizationId?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -19760,6 +19773,7 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
+    currentStock?: boolean
     unit?: boolean
     organizationId?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -19771,11 +19785,12 @@ export namespace Prisma {
     name?: boolean
     code?: boolean
     lowStockThreshold?: boolean
+    currentStock?: boolean
     unit?: boolean
     organizationId?: boolean
   }
 
-  export type IngredientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "code" | "lowStockThreshold" | "unit" | "organizationId", ExtArgs["result"]["ingredient"]>
+  export type IngredientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "name" | "code" | "lowStockThreshold" | "currentStock" | "unit" | "organizationId", ExtArgs["result"]["ingredient"]>
   export type IngredientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     recipeItems?: boolean | Ingredient$recipeItemsArgs<ExtArgs>
     transactions?: boolean | Ingredient$transactionsArgs<ExtArgs>
@@ -19802,6 +19817,7 @@ export namespace Prisma {
       name: string
       code: string | null
       lowStockThreshold: number | null
+      currentStock: number
       unit: $Enums.IngredientUnit
       organizationId: string
     }, ExtArgs["result"]["ingredient"]>
@@ -20235,6 +20251,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Ingredient", 'String'>
     readonly code: FieldRef<"Ingredient", 'String'>
     readonly lowStockThreshold: FieldRef<"Ingredient", 'Float'>
+    readonly currentStock: FieldRef<"Ingredient", 'Float'>
     readonly unit: FieldRef<"Ingredient", 'IngredientUnit'>
     readonly organizationId: FieldRef<"Ingredient", 'String'>
   }
@@ -43679,6 +43696,7 @@ export namespace Prisma {
     name: 'name',
     code: 'code',
     lowStockThreshold: 'lowStockThreshold',
+    currentStock: 'currentStock',
     unit: 'unit',
     organizationId: 'organizationId'
   };
@@ -45481,6 +45499,7 @@ export namespace Prisma {
     name?: StringFilter<"Ingredient"> | string
     code?: StringNullableFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableFilter<"Ingredient"> | number | null
+    currentStock?: FloatFilter<"Ingredient"> | number
     unit?: EnumIngredientUnitFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringFilter<"Ingredient"> | string
     recipeItems?: RecipeIngredientListRelationFilter
@@ -45494,6 +45513,7 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     lowStockThreshold?: SortOrderInput | SortOrder
+    currentStock?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
     recipeItems?: RecipeIngredientOrderByRelationAggregateInput
@@ -45511,6 +45531,7 @@ export namespace Prisma {
     name?: StringFilter<"Ingredient"> | string
     code?: StringNullableFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableFilter<"Ingredient"> | number | null
+    currentStock?: FloatFilter<"Ingredient"> | number
     unit?: EnumIngredientUnitFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringFilter<"Ingredient"> | string
     recipeItems?: RecipeIngredientListRelationFilter
@@ -45524,6 +45545,7 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrderInput | SortOrder
     lowStockThreshold?: SortOrderInput | SortOrder
+    currentStock?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
     _count?: IngredientCountOrderByAggregateInput
@@ -45542,6 +45564,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Ingredient"> | string
     code?: StringNullableWithAggregatesFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableWithAggregatesFilter<"Ingredient"> | number | null
+    currentStock?: FloatWithAggregatesFilter<"Ingredient"> | number
     unit?: EnumIngredientUnitWithAggregatesFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringWithAggregatesFilter<"Ingredient"> | string
   }
@@ -48494,6 +48517,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
     transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
@@ -48506,6 +48530,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     organizationId: string
     recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
@@ -48518,6 +48543,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
     transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
@@ -48530,6 +48556,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
     recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
@@ -48542,6 +48569,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     organizationId: string
   }
@@ -48552,6 +48580,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
   }
 
@@ -48561,6 +48590,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
   }
@@ -51525,12 +51555,14 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     lowStockThreshold?: SortOrder
+    currentStock?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
   }
 
   export type IngredientAvgOrderByAggregateInput = {
     lowStockThreshold?: SortOrder
+    currentStock?: SortOrder
   }
 
   export type IngredientMaxOrderByAggregateInput = {
@@ -51539,6 +51571,7 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     lowStockThreshold?: SortOrder
+    currentStock?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
   }
@@ -51549,12 +51582,14 @@ export namespace Prisma {
     name?: SortOrder
     code?: SortOrder
     lowStockThreshold?: SortOrder
+    currentStock?: SortOrder
     unit?: SortOrder
     organizationId?: SortOrder
   }
 
   export type IngredientSumOrderByAggregateInput = {
     lowStockThreshold?: SortOrder
+    currentStock?: SortOrder
   }
 
   export type EnumIngredientUnitWithAggregatesFilter<$PrismaModel = never> = {
@@ -57940,6 +57975,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
     transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
@@ -57951,6 +57987,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
     transactions?: IngredientTransactionUncheckedCreateNestedManyWithoutIngredientInput
@@ -58671,6 +58708,7 @@ export namespace Prisma {
     name?: StringFilter<"Ingredient"> | string
     code?: StringNullableFilter<"Ingredient"> | string | null
     lowStockThreshold?: FloatNullableFilter<"Ingredient"> | number | null
+    currentStock?: FloatFilter<"Ingredient"> | number
     unit?: EnumIngredientUnitFilter<"Ingredient"> | $Enums.IngredientUnit
     organizationId?: StringFilter<"Ingredient"> | string
   }
@@ -61247,6 +61285,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     recipeItems?: RecipeIngredientCreateNestedManyWithoutIngredientInput
     organization: OrganizationCreateNestedOneWithoutIngredientsInput
@@ -61258,6 +61297,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     organizationId: string
     recipeItems?: RecipeIngredientUncheckedCreateNestedManyWithoutIngredientInput
@@ -61405,6 +61445,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutIngredientsNestedInput
@@ -61416,6 +61457,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
     recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
@@ -61594,6 +61636,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     transactions?: IngredientTransactionCreateNestedManyWithoutIngredientInput
     organization: OrganizationCreateNestedOneWithoutIngredientsInput
@@ -61605,6 +61648,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
     organizationId: string
     transactions?: IngredientTransactionUncheckedCreateNestedManyWithoutIngredientInput
@@ -61673,6 +61717,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutIngredientsNestedInput
@@ -61684,6 +61729,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     organizationId?: StringFieldUpdateOperationsInput | string
     transactions?: IngredientTransactionUncheckedUpdateManyWithoutIngredientNestedInput
@@ -66923,6 +66969,7 @@ export namespace Prisma {
     name: string
     code?: string | null
     lowStockThreshold?: number | null
+    currentStock?: number
     unit: $Enums.IngredientUnit
   }
 
@@ -67294,6 +67341,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUpdateManyWithoutIngredientNestedInput
     transactions?: IngredientTransactionUpdateManyWithoutIngredientNestedInput
@@ -67305,6 +67353,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
     recipeItems?: RecipeIngredientUncheckedUpdateManyWithoutIngredientNestedInput
     transactions?: IngredientTransactionUncheckedUpdateManyWithoutIngredientNestedInput
@@ -67316,6 +67365,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     lowStockThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentStock?: FloatFieldUpdateOperationsInput | number
     unit?: EnumIngredientUnitFieldUpdateOperationsInput | $Enums.IngredientUnit
   }
 

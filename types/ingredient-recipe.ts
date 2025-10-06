@@ -16,6 +16,7 @@ export interface Ingredient {
   slug: string;
   name: string;
   code: string | null;
+  currentStock: number | null;
   lowStockThreshold: number | null;
   imageId: string;
   unit: IngredientUnit;
@@ -24,6 +25,7 @@ export interface Ingredient {
 export interface IngredientTransaction {
   id: string;
   ingredientId: string;
+  ingredient: Ingredient;
   type: IngredientTransactionType;
   quantity: number;
   price: number;
