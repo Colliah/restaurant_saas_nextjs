@@ -33,6 +33,11 @@ export interface IngredientTransaction {
   createdById: string | null;
   createdAt: Date;
   organizationId: string;
+  createdBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
 }
 
 export interface Recipe {

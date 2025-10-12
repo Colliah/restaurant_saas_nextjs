@@ -1,8 +1,6 @@
 import { auth } from "@/lib/auth";
-import { authClient } from "@/lib/auth-client";
 import { prisma } from "@/lib/prisma";
 import { ingredientTransactionSchema } from "@/schema/ingredient-transaction";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,6 +9,7 @@ export async function GET() {
     const ingredient = await prisma.ingredientTransaction.findMany({
       include: {
         ingredient: true,
+        createdBy: true,
       },
     });
     return NextResponse.json(ingredient, { status: 200 });
@@ -38,86 +37,63 @@ export async function POST(req: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { errors: validation.error.flatten().fieldErrors },
+        {
+          message: "Invalid request data.",
+          errors: validation.error.flatten().fieldErrors,
+        },
         { status: 400 }
       );
     }
 
-    const { ingredientId, type, quantity, price, notes } = validation.data;
+    const { type, notes, items } = validation.data;
 
-    const ingredient = await prisma.ingredient.findFirst({
-      where: { id: ingredientId, organizationId },
+    const newTransactions = await prisma.$transaction(async (tx) => {
+      const results = [];
+
+      if (type === "EXPORT") {
+        for (const item of items) {
+          const ingredient = await tx.ingredient.findUnique({
+            where: { id: item.ingredientId },
+          });
+          if (!ingredient || ingredient.currentStock < item.quantity) {
+            throw new Error(
+              `Insufficient stock for ${ingredient?.name || item.ingredientId}. Available: ${ingredient?.currentStock || 0}`
+            );
+          }
+        }
+      }
+
+      for (const item of items) {
+        await tx.ingredient.update({
+          where: { id: item.ingredientId },
+          data: {
+            currentStock: {
+              [type === "IMPORT" ? "increment" : "decrement"]: item.quantity,
+            },
+          },
+        });
+
+        const newTransaction = await tx.ingredientTransaction.create({
+          data: {
+            ingredientId: item.ingredientId,
+            type,
+            quantity: item.quantity,
+            price: item.price,
+            notes,
+            createdById,
+            organizationId,
+          },
+        });
+        results.push(newTransaction);
+      }
+      return results;
     });
 
-    if (!ingredient) {
-      return NextResponse.json(
-        { message: "Ingredient not found or you don't have permission." },
-        { status: 404 }
-      );
-    }
-
-    if (type === "IMPORT") {
-      const [, newTransaction] = await prisma.$transaction([
-        prisma.ingredient.update({
-          where: { id: ingredientId },
-          data: { currentStock: { increment: quantity } },
-        }),
-        prisma.ingredientTransaction.create({
-          data: {
-            ingredientId,
-            type,
-            quantity,
-            price,
-            notes,
-            createdById,
-            organizationId,
-          },
-        }),
-      ]);
-      return NextResponse.json(newTransaction, { status: 201 });
-    } else if (type === "EXPORT") {
-      if (ingredient.currentStock < quantity) {
-        return NextResponse.json(
-          {
-            message: `Insufficient stock. Only ${ingredient.currentStock} ${ingredient.unit} available.`,
-          },
-          { status: 400 }
-        );
-      }
-
-      const [, newTransaction] = await prisma.$transaction([
-        prisma.ingredient.update({
-          where: { id: ingredientId },
-          data: { currentStock: { decrement: quantity } },
-        }),
-        prisma.ingredientTransaction.create({
-          data: {
-            ingredientId,
-            type,
-            quantity,
-            price,
-            notes,
-            createdById,
-            organizationId,
-          },
-        }),
-      ]);
-      return NextResponse.json(newTransaction, { status: 201 });
-    }
-
-    return NextResponse.json(
-      { message: "Invalid transaction type specified." },
-      { status: 400 }
-    );
+    return NextResponse.json(newTransactions, { status: 201 });
   } catch (error) {
     console.error("Failed to create transaction:", error);
-    if (error instanceof PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        return NextResponse.json(
-          { message: "A required record was not found." },
-          { status: 404 }
-        );
-      }
+    if (error instanceof Error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
     }
     return NextResponse.json(
       { message: "Internal Server Error" },

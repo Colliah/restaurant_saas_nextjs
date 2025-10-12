@@ -18,16 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Ingredient,
   IngredientTransactionType,
 } from "@/types/ingredient-recipe";
-import {
-  IngredientTransactionFormValues,
-  ingredientTransactionSchema,
-} from "@/schema/ingredient-transaction";
 import {
   InputGroup,
   InputGroupAddon,
@@ -41,17 +36,24 @@ interface TransactionFormProps {
   onSuccess?: () => void;
 }
 
+interface SelectedItems extends Ingredient {
+  quantity: number;
+  price: number;
+}
+
+type FormValues = {
+  type: IngredientTransactionType;
+  notes?: string;
+};
+
 export function TransactionForm({ onSuccess }: TransactionFormProps) {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [isLoadingIngredients, setIsLoadingIngredients] = useState(true);
+  const [selectedItems, setSelectedItems] = useState<SelectedItems[]>([]);
 
-  const form = useForm<IngredientTransactionFormValues>({
-    resolver: zodResolver(ingredientTransactionSchema),
+  const form = useForm<FormValues>({
     defaultValues: {
-      ingredientId: "",
       type: IngredientTransactionType.IMPORT,
-      quantity: 1,
-      price: 0,
       notes: "",
     },
   });
@@ -74,14 +76,29 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
     fetchIngredients();
   }, []);
 
-  const onSubmit = async (values: IngredientTransactionFormValues) => {
+  const onSubmit = async (values: FormValues) => {
+    if (selectedItems.length === 0) {
+      toast.error("Please add at least one ingredient.");
+      return;
+    }
+
+    const payload = {
+      type: values.type,
+      notes: values.notes,
+      items: selectedItems.map((item) => ({
+        ingredientId: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    };
+
     try {
       const response = await fetch("/api/ingredient-transactions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -91,6 +108,7 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
 
       toast.success("Transaction created successfully!");
       form.reset();
+      setSelectedItems([]);
       onSuccess?.();
     } catch (error) {
       if (error instanceof Error) {
@@ -101,48 +119,82 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
     }
   };
 
+  const handleSelectItem = (ingredientId: string) => {
+    const isAlready = selectedItems.some((item) => item.id === ingredientId);
+    if (isAlready) {
+      toast.info("Item already added");
+      return;
+    }
+
+    const itemtoAdd = ingredients.find(
+      (ingredient) => ingredient.id === ingredientId
+    );
+    if (itemtoAdd) {
+      const newItem: SelectedItems = {
+        ...itemtoAdd,
+        quantity: 1,
+        price: 0,
+      };
+      setSelectedItems((currentItem) => [...currentItem, newItem]);
+    }
+  };
+
+  const handleUpdateItem = (
+    itemId: string,
+    field: "price" | "quantity",
+    value: number
+  ) => {
+    setSelectedItems((currentItems) =>
+      currentItems.map((item) => {
+        if (item.id === itemId) {
+          return { ...item, [field]: value };
+        }
+        return item;
+      })
+    );
+  };
+
+  const handleRemoveItem = (itemId: string) => {
+    setSelectedItems((currentItems) =>
+      currentItems.filter((item) => item.id !== itemId)
+    );
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 px-4 mt-2"
       >
-        <FormField
-          control={form.control}
-          name="ingredientId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ingredient</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={isLoadingIngredients}
-              >
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={
-                        isLoadingIngredients
-                          ? "Loading..."
-                          : "Select an ingredient"
-                      }
-                    />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {!isLoadingIngredients &&
-                    ingredients.map((ingredient) => (
-                      <SelectItem key={ingredient.id} value={ingredient.id}>
-                        {ingredient.name}{" "}
-                        {ingredient.code ? `(${ingredient.code})` : ""}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+          <FormLabel>Ingredient</FormLabel>
+          <Select
+            onValueChange={handleSelectItem}
+            disabled={isLoadingIngredients}
+            value=""
+          >
+            <FormControl>
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    isLoadingIngredients
+                      ? "Loading..."
+                      : "Select an ingredient to add"
+                  }
+                />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {!isLoadingIngredients &&
+                ingredients.map((ingredient) => (
+                  <SelectItem key={ingredient.id} value={ingredient.id}>
+                    {ingredient.name}{" "}
+                    {ingredient.code ? `(${ingredient.code})` : ""}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </FormItem>
         <FormField
           control={form.control}
           name="type"
@@ -167,60 +219,6 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             </FormItem>
           )}
         />
-
-        <div className="grid grid-cols-2 gap-x-4">
-          <FormField
-            control={form.control}
-            name="quantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantity</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    placeholder="0"
-                    // Chuyển đổi giá trị về number khi onChange
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <InputGroup>
-                    <InputGroupAddon>
-                      <InputGroupText>$</InputGroupText>
-                    </InputGroupAddon>
-                    <InputGroupInput
-                      {...field}
-                      type="number"
-                      placeholder="0.00"
-                      step="0.01"
-                      // Chuyển đổi giá trị về number khi onChange
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                    <InputGroupAddon align="inline-end">
-                      <InputGroupText>USD</InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
         <FormField
           control={form.control}
           name="notes"
@@ -238,6 +236,77 @@ export function TransactionForm({ onSuccess }: TransactionFormProps) {
             </FormItem>
           )}
         />
+        <div className="space-y-3 rounded-md border p-3">
+          <h3 className="text-sm font-medium">Items to Transaction</h3>
+          {selectedItems.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No ingredients added yet.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {selectedItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-x-2 rounded-md border p-2"
+                >
+                  <span className="flex-1 text-sm">
+                    {item.name} {item.code ? `(${item.code})` : ""}
+                  </span>
+
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <InputGroupText>Quantity</InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      type="number"
+                      placeholder="Qty"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleUpdateItem(
+                          item.id,
+                          "quantity",
+                          parseFloat(e.target.value) || 0
+                        )
+                      }
+                    />
+                    <InputGroupAddon align="inline-end"></InputGroupAddon>
+                  </InputGroup>
+
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <InputGroupText>$</InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      type="number"
+                      placeholder="Price"
+                      step="0.01"
+                      value={item.price}
+                      onChange={(e) =>
+                        handleUpdateItem(
+                          item.id,
+                          "price",
+                          parseFloat(e.target.value) || 0
+                        )
+                      }
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupText>USD</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveItem(item.id)}
+                  >
+                    X
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>{" "}
         <Button
           className="w-full"
           type="submit"
